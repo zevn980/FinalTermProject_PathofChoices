@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.finaltermproject">
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="Path Of Choices"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.FinalTermProject"
+        tools:targetApi="31">
+
+        <!-- Launch Screen -->
+        <activity
+            android:name=".TitleScreenActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <!-- Add these: -->
+        <activity android:name=".MainMenuActivity" />
+        <activity android:name=".UserManagementActivity" />
+        <activity android:name=".GameActivity" />
+        <!-- If you made others like NewStoryActivity, add here too -->
+    </application>
+</manifest>

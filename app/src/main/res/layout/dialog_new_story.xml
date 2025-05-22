@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@android:color/white">
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/dialogTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Enter Your Name"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textColor="#1C104F"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Input Field -->
+    <EditText
+        android:id="@+id/editUserName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Name"
+        android:backgroundTint="#4C4BA0"
+        android:textColorHint="#999999"
+        android:textColor="#1C104F"
+        android:inputType="textPersonName"
+        android:maxLines="1"
+        android:layout_marginBottom="24dp"/>
+
+    <!-- Start Button -->
+    <Button
+        android:id="@+id/btnStartNewStory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="START"
+        android:textAllCaps="false"
+        android:backgroundTint="#4C4BA0"
+        android:textColor="@android:color/white"/>
+</LinearLayout>
