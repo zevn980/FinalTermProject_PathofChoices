@@ -29,7 +29,7 @@ public class TitleScreenActivity extends AppCompatActivity {
         animator.start();
 
         // Music setup
-        mediaPlayer = MediaPlayer.create(this, R.raw.title_music);
+        mediaPlayer = MediaPlayer.create(this, R.raw.menu_music);
         mediaPlayer.setLooping(true);
         mediaPlayer.setVolume(0f, 0f); // Start silent for fade-in
         mediaPlayer.start();
