@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,7 +13,7 @@ import java.util.List;
 public class GameActivity extends AppCompatActivity {
 
     private TextView textDialog;
-    private Button btn1, btn2, btn3;
+    private LinearLayout choiceContainer;
     private DatabaseHelper db;
     private User currentUser;
     private int currentDialogId;
@@ -22,13 +23,22 @@ public class GameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
+        List<Integer> missingDialogs = DatabaseHelper.getInstance(this).getDanglingNextDialogIds();
+
+        if (missingDialogs.isEmpty()) {
+            Log.d("DEBUG", "All next_dialog_ids have valid dialogs.");
+        } else {
+            Log.w("DEBUG", "Missing dialogs for the following next_dialog_ids: " + missingDialogs);
+        }
+
         textDialog = findViewById(R.id.textDialog);
-        btn1 = findViewById(R.id.btnChoice1);
-        btn2 = findViewById(R.id.btnChoice2);
-        btn3 = findViewById(R.id.btnChoice3);
+        choiceContainer = findViewById(R.id.choiceContainer); // New dynamic layout
 
         db = DatabaseHelper.getInstance(this);
         currentUser = UserManager.getCurrentUser(this);
+
+        int count = db.getDialogCount();
+        Log.d("DEBUG", "Dialog count: " + count);
 
         if (currentUser == null) {
             Toast.makeText(this, "No user selected", Toast.LENGTH_SHORT).show();
@@ -36,16 +46,20 @@ public class GameActivity extends AppCompatActivity {
             return;
         }
 
-        currentDialogId = db.getUserDialogId(currentUser.getId()); // load saved progress
+        currentDialogId = db.getUserDialogId(currentUser.getId()); // Load saved progress
         Log.d("DEBUG", "Loading dialog ID: " + currentDialogId);
+        loadDialog(currentDialogId);
     }
 
     private void loadDialog(int dialogId) {
         DialogEntry dialog = db.getDialogById(dialogId);
         if (dialog == null) {
+            Log.d("DEBUG", "DialogEntry is null for ID: " + dialogId);
             textDialog.setText("The End.");
             hideChoices();
             return;
+        } else {
+            Log.d("DEBUG", "Loaded dialog ID " + dialog.getId() + ": " + dialog.getText());
         }
 
         textDialog.setText(dialog.getText());
@@ -54,28 +68,31 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void showChoices(List<Choice> choices) {
-        Button[] buttons = {btn1, btn2, btn3};
+        choiceContainer.removeAllViews(); // Clear previous buttons
 
-        for (int i = 0; i < buttons.length; i++) {
-            if (i < choices.size()) {
-                Choice choice = choices.get(i);
-                Button btn = buttons[i];
-                btn.setVisibility(View.VISIBLE);
-                btn.setText(choice.getChoiceText());
-                btn.setOnClickListener(v -> {
-                    db.updateUserProgress(currentUser.getId(), choice.getNextDialogId());
-                    currentDialogId = choice.getNextDialogId();
-                    loadDialog(currentDialogId);
-                });
-            } else {
-                buttons[i].setVisibility(View.GONE);
-            }
+        for (Choice choice : choices) {
+            Button choiceButton = new Button(this);
+            choiceButton.setText(choice.getChoiceText());
+            choiceButton.setBackgroundColor(getResources().getColor(android.R.color.holo_purple)); // customize color
+            choiceButton.setTextColor(getResources().getColor(android.R.color.white));
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            params.setMargins(0, 16, 0, 0); // spacing between buttons
+            choiceButton.setLayoutParams(params);
+
+            choiceButton.setOnClickListener(v -> {
+                db.updateUserProgress(currentUser.getId(), choice.getNextDialogId());
+                currentDialogId = choice.getNextDialogId();
+                loadDialog(currentDialogId);
+            });
+
+            choiceContainer.addView(choiceButton);
         }
     }
 
     private void hideChoices() {
-        btn1.setVisibility(View.GONE);
-        btn2.setVisibility(View.GONE);
-        btn3.setVisibility(View.GONE);
+        choiceContainer.removeAllViews();
     }
 }

@@ -28,6 +28,5 @@
         <activity android:name=".MainMenuActivity" />
         <activity android:name=".UserManagementActivity" />
         <activity android:name=".GameActivity" />
-        <!-- If you made others like NewStoryActivity, add here too -->
     </application>
 </manifest>

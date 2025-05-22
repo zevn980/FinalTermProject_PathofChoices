@@ -30,10 +30,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private Context context;
     private DatabaseHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
+        this.context = context;
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        Log.d("DEBUG", "Creating tables...");
         db.execSQL("CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE);");
         db.execSQL("CREATE TABLE progress (user_id INTEGER, current_dialog_id INTEGER, " +
                 "FOREIGN KEY(user_id) REFERENCES users(id));");
@@ -43,6 +45,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "FOREIGN KEY(dialog_id) REFERENCES dialogs(id), " +
                 "FOREIGN KEY(next_dialog_id) REFERENCES dialogs(id));");
 
+        Log.d("DEBUG", "Seeding database...");
         executeSqlScript(db, context, "seed_story.sql");
     }
 
@@ -184,11 +187,48 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
 
             reader.close();
-            is.close();
             Log.d("DEBUG", "Finished seeding story.");
         } catch (Exception e) {
             Log.e("ERROR", "Failed to execute SQL script: " + e.getMessage());
-            e.printStackTrace();
         }
+    }
+
+    public int getDialogCount() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM dialogs", null);
+        int count = 0;
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0);
+        }
+        cursor.close();
+        return count;
+    }
+
+    public List<Integer> getDanglingNextDialogIds() {
+        List<Integer> missingDialogIds = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // Get all distinct next_dialog_id values from choices
+        Cursor cursor = db.rawQuery(
+                "SELECT DISTINCT next_dialog_id FROM choices", null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                int nextId = cursor.getInt(0);
+
+                // Check if that dialog exists
+                Cursor check = db.rawQuery(
+                        "SELECT 1 FROM dialogs WHERE id = ?", new String[]{String.valueOf(nextId)});
+
+                if (!check.moveToFirst()) {
+                    missingDialogIds.add(nextId);
+                }
+                check.close();
+
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+
+        return missingDialogIds;
     }
 }
