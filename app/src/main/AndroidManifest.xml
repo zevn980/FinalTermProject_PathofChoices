@@ -28,5 +28,9 @@
         <activity android:name=".MainMenuActivity" />
         <activity android:name=".UserManagementActivity" />
         <activity android:name=".GameActivity" />
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
     </application>
 </manifest>

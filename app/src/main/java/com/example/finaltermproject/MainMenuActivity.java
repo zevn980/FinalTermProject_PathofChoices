@@ -1,8 +1,11 @@
 package com.example.finaltermproject;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,6 +18,10 @@ public class MainMenuActivity extends AppCompatActivity {
     private ImageButton userButton;
     private Button btnNewStory, btnContinue, btnExit;
 
+    private MediaPlayer mediaPlayer;
+    private final float maxVolume = 1.0f;
+
+    @SuppressLint("WrongViewCast")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,6 +31,13 @@ public class MainMenuActivity extends AppCompatActivity {
         btnNewStory = findViewById(R.id.btnNewStory);
         btnContinue = findViewById(R.id.btnContinue);
         btnExit = findViewById(R.id.btnExit);
+
+        // Setup and play background music
+        mediaPlayer = MediaPlayer.create(this, R.raw.menu_music);
+        mediaPlayer.setLooping(true);
+        mediaPlayer.setVolume(0f, 0f); // Start silent
+        mediaPlayer.start();
+        fadeInMusic();
 
         //Show/hide User button
         boolean usersExist = DatabaseHelper.getInstance(this).hasUsers();
@@ -42,15 +56,73 @@ public class MainMenuActivity extends AppCompatActivity {
 
         //Continue Game
         btnContinue.setOnClickListener(v -> {
+            fadeOutMusicAndFinish(() -> {
             if (UserManager.getCurrentUser(this) == null) {
                 showNoUserDialog(); // defined earlier
             } else {
                 startActivity(new Intent(this, GameActivity.class));
             }
+            });
         });
 
         //Exit
         btnExit.setOnClickListener(v -> finishAffinity());
+    }
+
+    private void fadeInMusic() {
+        final int fadeDuration = 3000; // milliseconds
+        final int fadeStep = 100;
+        final float volumeStep = maxVolume / (fadeDuration / fadeStep);
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            float volume = 0f;
+
+            @Override
+            public void run() {
+                if (volume < maxVolume) {
+                    volume += volumeStep;
+                    mediaPlayer.setVolume(volume, volume);
+                    handler.postDelayed(this, fadeStep);
+                } else {
+                    mediaPlayer.setVolume(maxVolume, maxVolume);
+                }
+            }
+        }, fadeStep);
+    }
+
+    private void fadeOutMusicAndFinish(Runnable afterFade) {
+        final int fadeDuration = 2000;
+        final int fadeStep = 100;
+        final float volumeStep = maxVolume / (fadeDuration / fadeStep);
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            float volume = maxVolume;
+
+            @Override
+            public void run() {
+                if (volume > 0f) {
+                    volume -= volumeStep;
+                    mediaPlayer.setVolume(volume, volume);
+                    handler.postDelayed(this, fadeStep);
+                } else {
+                    mediaPlayer.stop();
+                    mediaPlayer.release();
+                    if (afterFade != null) afterFade.run();
+                }
+            }
+        }, fadeStep);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mediaPlayer != null) {
+            if (mediaPlayer.isPlaying()) mediaPlayer.stop();
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
     }
 
     private void showNoUserDialog() {
