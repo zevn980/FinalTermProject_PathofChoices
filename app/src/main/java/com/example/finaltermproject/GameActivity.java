@@ -1,6 +1,8 @@
 package com.example.finaltermproject;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -17,11 +19,18 @@ public class GameActivity extends AppCompatActivity {
     private DatabaseHelper db;
     private User currentUser;
     private int currentDialogId;
+    private MediaPlayer mediaPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+
+        mediaPlayer = MediaPlayer.create(this, R.raw.game_music);
+        mediaPlayer.setLooping(true);
+        mediaPlayer.setVolume(0f, 0f); // Start silent
+        mediaPlayer.start();
+        fadeInMusic();
 
         List<Integer> missingDialogs = DatabaseHelper.getInstance(this).getDanglingNextDialogIds();
 
@@ -73,8 +82,10 @@ public class GameActivity extends AppCompatActivity {
         for (Choice choice : choices) {
             Button choiceButton = new Button(this);
             choiceButton.setText(choice.getChoiceText());
-            choiceButton.setBackgroundColor(getResources().getColor(android.R.color.holo_purple)); // customize color
+            choiceButton.setBackgroundResource(R.drawable.choice_button_background);
             choiceButton.setTextColor(getResources().getColor(android.R.color.white));
+            choiceButton.setTextSize(16);
+            choiceButton.setAllCaps(false);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
@@ -94,5 +105,61 @@ public class GameActivity extends AppCompatActivity {
 
     private void hideChoices() {
         choiceContainer.removeAllViews();
+    }
+
+    private void fadeInMusic() {
+        final float maxVolume = 1.0f;
+        final int duration = 3000;
+        final int step = 100;
+        final float delta = maxVolume / (duration / step);
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            float volume = 0f;
+
+            @Override
+            public void run() {
+                if (volume < maxVolume) {
+                    volume += delta;
+                    mediaPlayer.setVolume(volume, volume);
+                    handler.postDelayed(this, step);
+                } else {
+                    mediaPlayer.setVolume(maxVolume, maxVolume);
+                }
+            }
+        }, step);
+    }
+
+    private void fadeOutMusicAndFinish(Runnable onComplete) {
+        final int duration = 2000;
+        final int step = 100;
+        final float delta = 1.0f / (duration / step);
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            float volume = 1.0f;
+
+            @Override
+            public void run() {
+                if (volume > 0f) {
+                    volume -= delta;
+                    mediaPlayer.setVolume(volume, volume);
+                    handler.postDelayed(this, step);
+                } else {
+                    mediaPlayer.stop();
+                    mediaPlayer.release();
+                    if (onComplete != null) onComplete.run();
+                }
+            }
+        }, step);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
     }
 }
