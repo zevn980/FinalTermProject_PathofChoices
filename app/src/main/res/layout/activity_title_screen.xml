@@ -6,12 +6,12 @@
     android:id="@+id/title_screen_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/title_screen"> <!-- Deep purple background -->
+    android:background="@drawable/title_screen"
+    android:clickable="true"
+    android:focusable="true">
 
     <!-- Game Title -->
-
     <!-- Tap Anywhere Text -->
-
     <TextView
         android:id="@+id/titleText"
         android:layout_width="223dp"

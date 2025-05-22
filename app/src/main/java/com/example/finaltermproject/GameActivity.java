@@ -20,6 +20,7 @@ public class GameActivity extends AppCompatActivity {
     private User currentUser;
     private int currentDialogId;
     private MediaPlayer mediaPlayer;
+    private boolean isChoiceClickable = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,10 +28,14 @@ public class GameActivity extends AppCompatActivity {
         setContentView(R.layout.activity_game);
 
         mediaPlayer = MediaPlayer.create(this, R.raw.game_music);
-        mediaPlayer.setLooping(true);
-        mediaPlayer.setVolume(0f, 0f); // Start silent
-        mediaPlayer.start();
-        fadeInMusic();
+        if (mediaPlayer != null) {
+            mediaPlayer.setLooping(true);
+            mediaPlayer.setVolume(0f, 0f);
+            mediaPlayer.start();
+            fadeInMusic();
+        } else {
+            Log.e("GameActivity", "Failed to load game music.");
+        }
 
         List<Integer> missingDialogs = DatabaseHelper.getInstance(this).getDanglingNextDialogIds();
 
@@ -66,12 +71,19 @@ public class GameActivity extends AppCompatActivity {
             Log.d("DEBUG", "DialogEntry is null for ID: " + dialogId);
             textDialog.setText("The End.");
             hideChoices();
+
+            Button backButton = new Button(this);
+            backButton.setText("Back to Menu");
+            backButton.setOnClickListener(v -> finish());
+            choiceContainer.addView(backButton);
             return;
         } else {
             Log.d("DEBUG", "Loaded dialog ID " + dialog.getId() + ": " + dialog.getText());
         }
 
+        textDialog.setAlpha(0f);
         textDialog.setText(dialog.getText());
+        textDialog.animate().alpha(1f).setDuration(300).start();
         List<Choice> choices = db.getChoicesForDialog(dialogId);
         showChoices(choices);
     }
@@ -94,9 +106,15 @@ public class GameActivity extends AppCompatActivity {
             choiceButton.setLayoutParams(params);
 
             choiceButton.setOnClickListener(v -> {
+                if (!isChoiceClickable) return;
+                isChoiceClickable = false;
+
                 db.updateUserProgress(currentUser.getId(), choice.getNextDialogId());
                 currentDialogId = choice.getNextDialogId();
                 loadDialog(currentDialogId);
+
+                // Re-enable after short delay
+                new Handler().postDelayed(() -> isChoiceClickable = true, 500);
             });
 
             choiceContainer.addView(choiceButton);

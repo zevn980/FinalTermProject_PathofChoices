@@ -15,6 +15,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 public class TitleScreenActivity extends AppCompatActivity {
 
     private MediaPlayer mediaPlayer;
+    private boolean isTransitioning = false; // Prevents rapid multiple taps
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,23 +29,32 @@ public class TitleScreenActivity extends AppCompatActivity {
         animator.setRepeatCount(ValueAnimator.INFINITE);
         animator.start();
 
-        // Music setup
-        mediaPlayer = MediaPlayer.create(this, R.raw.menu_music);
-        mediaPlayer.setLooping(true);
-        mediaPlayer.setVolume(0f, 0f); // Start silent for fade-in
-        mediaPlayer.start();
-
-        fadeInMusic(); // Call fade in
-
+        // Music setup with error handling
+        try {
+            mediaPlayer = MediaPlayer.create(this, R.raw.menu_music);
+            if (mediaPlayer != null) {
+                mediaPlayer.setLooping(true);
+                mediaPlayer.setVolume(0f, 0f);
+                mediaPlayer.start();
+                fadeInMusic();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         // Set up tap anywhere listener on the whole screen
         ConstraintLayout titleRoot = findViewById(R.id.title_screen_root);
-        titleRoot.setOnClickListener(v -> {
-            fadeOutMusicAndFinish(() -> {
-                Intent intent = new Intent(TitleScreenActivity.this, MainMenuActivity.class);
-                startActivity(intent);
-                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-                finish();
-            });
+        titleRoot.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_DOWN && !isTransitioning) {
+                isTransitioning = true;
+                fadeOutMusicAndFinish(() -> {
+                    Intent intent = new Intent(TitleScreenActivity.this, MainMenuActivity.class);
+                    startActivity(intent);
+                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                    finish();
+                });
+                return true;
+            }
+            return false;
         });
     }
 
@@ -102,17 +112,5 @@ public class TitleScreenActivity extends AppCompatActivity {
             mediaPlayer.release();
             mediaPlayer = null;
         }
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        // Detect any screen tap
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            Intent intent = new Intent(TitleScreenActivity.this, MainMenuActivity.class);
-            startActivity(intent);
-            finish();
-            return true;
-        }
-        return super.onTouchEvent(event);
     }
 }

@@ -20,6 +20,7 @@ public class MainMenuActivity extends AppCompatActivity {
 
     private MediaPlayer mediaPlayer;
     private final float maxVolume = 1.0f;
+    private boolean isTransitioning = false;
 
     @SuppressLint("WrongViewCast")
     @Override
@@ -33,11 +34,17 @@ public class MainMenuActivity extends AppCompatActivity {
         btnExit = findViewById(R.id.btnExit);
 
         // Setup and play background music
-        mediaPlayer = MediaPlayer.create(this, R.raw.menu_music);
-        mediaPlayer.setLooping(true);
-        mediaPlayer.setVolume(0f, 0f); // Start silent
-        mediaPlayer.start();
-        fadeInMusic();
+        try {
+            mediaPlayer = MediaPlayer.create(this, R.raw.menu_music);
+            if (mediaPlayer != null) {
+                mediaPlayer.setLooping(true);
+                mediaPlayer.setVolume(0f, 0f);
+                mediaPlayer.start();
+                fadeInMusic();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         //Show/hide User button
         boolean usersExist = DatabaseHelper.getInstance(this).hasUsers();
@@ -56,13 +63,15 @@ public class MainMenuActivity extends AppCompatActivity {
 
         //Continue Game
         btnContinue.setOnClickListener(v -> {
-            fadeOutMusicAndFinish(() -> {
+            if (isTransitioning) return;
+            isTransitioning = true;
+
             if (UserManager.getCurrentUser(this) == null) {
-                showNoUserDialog(); // defined earlier
+                showNoUserDialog();
+                isTransitioning = false; // reset if no user selected
             } else {
-                startActivity(new Intent(this, GameActivity.class));
+                fadeOutMusicAndFinish(() -> startActivity(new Intent(this, GameActivity.class)));
             }
-            });
         });
 
         //Exit
