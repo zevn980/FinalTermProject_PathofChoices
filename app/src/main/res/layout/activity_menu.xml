@@ -1,89 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_menu_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#1C104F">
-
-    <!-- User icon button -->
+    android:background="@drawable/title_screen">
 
     <!-- Game Title -->
-
-    <!-- Start Game Button -->
-
-    <ImageButton
-        android:id="@+id/userButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="40dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="User Management"
-        android:src="@android:drawable/ic_menu_manage"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/menuTitle"
-        app:tint="@android:color/white" />
-
     <TextView
         android:id="@+id/menuTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="sans-serif-light"
+        android:fontFamily="@font/cinzeldecorative_bold"
         android:gravity="center"
-        android:text="Path Of\nChoices"
+        android:text="Path of\nChoices"
         android:textColor="@android:color/white"
-        android:textSize="36sp"
+        android:textSize="50sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.157" />
-
-    <!-- New Story Button -->
-
-    <Button
-        android:id="@+id/btnContinue"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="40dp"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="#4C4BA0"
-        android:text="START GAME"
-        android:textAllCaps="false"
-        android:textColor="@android:color/white"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/menuButtonsContainer"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/userButton" />
-
-    <Button
-        android:id="@+id/btnNewStory"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="40dp"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="#4C4BA0"
-        android:text="NEW STORY"
-        android:textAllCaps="false"
-        android:textColor="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnContinue" />
+        app:layout_constraintVertical_bias="0.2" />
 
-    <!-- Exit Button -->
-    <Button
-        android:id="@+id/btnExit"
-        android:layout_width="0dp"
+    <!-- Menu Buttons -->
+    <LinearLayout
+        android:id="@+id/menuButtonsContainer"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="40dp"
+        android:orientation="vertical"
+        android:gravity="center"
         android:layout_marginTop="16dp"
-        android:backgroundTint="#4C4BA0"
-        android:text="EXIT"
-        android:textAllCaps="false"
-        android:textColor="@android:color/white"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/menuTitle"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnNewStory" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <Button
+            android:id="@+id/userButton"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="Manage Users"
+            android:textColor="#FFFF"
+            android:backgroundTint="#1e315b"
+            android:layout_marginTop="16dp" />
+
+        <Button
+            android:id="@+id/btnNewStory"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="Start New Story"
+            android:textColor="#FFFF"
+            android:backgroundTint="#1e315b"
+            android:layout_marginTop="16dp" />
+
+        <Button
+            android:id="@+id/btnContinue"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="Continue"
+            android:textColor="#FFFF"
+            android:backgroundTint="#1e315b"
+            android:layout_marginTop="16dp" />
+
+        <Button
+            android:id="@+id/btnExit"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="Exit"
+            android:textColor="#FFFF"
+            android:backgroundTint="#1e315b"
+            android:layout_marginTop="16dp" />
+
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

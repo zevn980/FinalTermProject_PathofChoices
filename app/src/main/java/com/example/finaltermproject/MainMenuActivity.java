@@ -1,101 +1,101 @@
 package com.example.finaltermproject;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import androidx.appcompat.app.AlertDialog;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainMenuActivity extends AppCompatActivity {
 
-    private ImageButton userButton;
-    private Button btnNewStory, btnContinue, btnExit;
+    private Button btnNewStory, btnContinue, btnExit, userButton;
+    private DatabaseHelper db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
 
-        userButton = findViewById(R.id.userButton);
+        db = DatabaseHelper.getInstance(this);
+
+        // Hook buttons to their XML IDs
         btnNewStory = findViewById(R.id.btnNewStory);
         btnContinue = findViewById(R.id.btnContinue);
         btnExit = findViewById(R.id.btnExit);
+        userButton = findViewById(R.id.userButton);
 
-        //Show/hide User button
-        boolean usersExist = DatabaseHelper.getInstance(this).hasUsers();
-        if (!usersExist) {
-            userButton.setVisibility(View.GONE);
-        }
-
-        //User Management
-        userButton.setOnClickListener(v -> {
-            Intent intent = new Intent(MainMenuActivity.this, UserManagementActivity.class);
-            startActivity(intent);
-        });
-
-        //New Story
-        btnNewStory.setOnClickListener(v -> showNewStoryDialog());
-
-        //Continue Game
-        btnContinue.setOnClickListener(v -> {
-            if (UserManager.getCurrentUser(this) == null) {
-                showNoUserDialog(); // defined earlier
-            } else {
-                startActivity(new Intent(this, GameActivity.class));
+        // Start new story
+        btnNewStory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (checkUserSelected()) {
+                    Intent intent = new Intent(MainMenuActivity.this, GameActivity.class);
+                    intent.putExtra("new_story", true);
+                    startActivity(intent);
+                }
             }
         });
 
-        //Exit
-        btnExit.setOnClickListener(v -> finishAffinity());
-    }
-
-    private void showNoUserDialog() {
-        new AlertDialog.Builder(this)
-                .setTitle("No User Selected")
-                .setMessage("Please create or select a user before continuing.")
-                .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
-                .show();
-    }
-
-    private void showNewStoryDialog() {
-        View dialogView = getLayoutInflater().inflate(R.layout.dialog_new_story, null);
-        EditText editName = dialogView.findViewById(R.id.editUserName);
-        Button btnStart = dialogView.findViewById(R.id.btnStartNewStory);
-
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setView(dialogView)
-                .create();
-
-        btnStart.setOnClickListener(v -> {
-            String username = editName.getText().toString().trim();
-
-            if (username.isEmpty()) {
-                editName.setError("Please enter a name");
-                return;
+        // Continue story
+        btnContinue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (checkUserSelected()) {
+                    Intent intent = new Intent(MainMenuActivity.this, GameActivity.class);
+                    intent.putExtra("new_story", false);
+                    startActivity(intent);
+                }
             }
+        });
 
-            long userId = DatabaseHelper.getInstance(this).addUser(username);
-            if (userId == -1) {
-                editName.setError("Username already exists");
-            } else {
-                User newUser = new User((int) userId, username);
-                UserManager.setCurrentUser(this, newUser);
+        // Exit app
+        btnExit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finishAffinity(); // Closes all activities
+            }
+        });
 
-                // Optionally initialize progress (set first dialog)
-                DatabaseHelper.getInstance(this).initializeUserProgress((int) userId);
-
-                dialog.dismiss();
-
-                // Start game activity
-                Intent intent = new Intent(this, GameActivity.class);
+        // Manage users
+        userButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainMenuActivity.this, UserManagementActivity.class);
                 startActivity(intent);
             }
         });
+    }
 
-        dialog.show();
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateButtonStates();
+    }
+
+    private boolean checkUserSelected() {
+        User currentUser = UserManager.getCurrentUser(this);
+        if (currentUser == null) {
+            Toast.makeText(this, "Please select a user first!", Toast.LENGTH_LONG).show();
+            // Automatically open user management
+            Intent intent = new Intent(this, UserManagementActivity.class);
+            startActivity(intent);
+            return false;
+        }
+        return true;
+    }
+
+    private void updateButtonStates() {
+        User currentUser = UserManager.getCurrentUser(this);
+        boolean userSelected = currentUser != null;
+
+        btnNewStory.setEnabled(userSelected);
+        btnContinue.setEnabled(userSelected);
+
+        if (userSelected) {
+            userButton.setText("User: " + currentUser.getUsername());
+        } else {
+            userButton.setText("Select User");
+        }
     }
 }

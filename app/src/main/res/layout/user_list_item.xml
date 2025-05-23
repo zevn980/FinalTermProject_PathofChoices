@@ -2,6 +2,7 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="12dp"
@@ -35,7 +36,7 @@
             android:text="Select"
             android:textAllCaps="false"
             android:textColor="@android:color/white"
-            android:backgroundTint="#4C4BA0"
+            android:backgroundTint="#1e315b"
             android:textSize="14sp"
             android:layout_marginEnd="8dp"/>
 
@@ -47,8 +48,9 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/ic_menu_edit"
             android:contentDescription="Rename User"
-            android:tint="#4C4BA0"
-            android:layout_marginEnd="4dp"/>
+            android:tint="#417dc7"
+            android:layout_marginEnd="4dp"
+            tools:ignore="UseAppTint" />
 
         <!-- Delete Icon -->
         <ImageButton
@@ -58,6 +60,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/ic_menu_delete"
             android:contentDescription="Delete User"
-            android:tint="#D32F2F"/>
+            android:tint="#D32F2F"
+            tools:ignore="UseAppTint" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>
