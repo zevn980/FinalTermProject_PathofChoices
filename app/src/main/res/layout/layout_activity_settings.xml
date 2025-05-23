@@ -5,7 +5,7 @@
     android:id="@+id/settingsRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#1C104F"
+    android:background="#417dc7"
     android:padding="24dp">
 
     <!-- Title -->
@@ -46,8 +46,8 @@
             android:id="@+id/switchSound"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:thumbTint="#4C4BA0"
-            android:trackTint="#AA9CF3"/>
+            android:thumbTint="#1e315b"
+            android:trackTint="#1e315b"/>
     </LinearLayout>
 
     <!-- Music Toggle -->
@@ -74,8 +74,8 @@
             android:id="@+id/switchMusic"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:thumbTint="#4C4BA0"
-            android:trackTint="#AA9CF3"/>
+            android:thumbTint="#1e315b"
+            android:trackTint="#1e315b"/>
     </LinearLayout>
 
     <!-- Music Volume Slider -->
@@ -100,8 +100,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="8dp"
-        android:thumbTint="#4C4BA0"
-        android:progressTint="#AA9CF3"/>
+        android:thumbTint="#1e315b"
+        android:progressTint="#1e315b"/>
 
     <!-- Back to Menu Button -->
     <Button
@@ -110,7 +110,7 @@
         android:layout_height="wrap_content"
         android:text="Main Menu"
         android:textAllCaps="false"
-        android:backgroundTint="#4C4BA0"
+        android:backgroundTint="#1e315b"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

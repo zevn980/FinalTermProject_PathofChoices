@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.TextView;
 
@@ -37,9 +39,11 @@ public class TitleScreenActivity extends AppCompatActivity {
                 mediaPlayer.setVolume(0f, 0f);
                 mediaPlayer.start();
                 fadeInMusic();
+            } else {
+                Log.e("TitleScreenActivity", "Failed to create MediaPlayer.");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e("TitleScreenActivity", "Error initializing MediaPlayer", e);
         }
         // Set up tap anywhere listener on the whole screen
         ConstraintLayout titleRoot = findViewById(R.id.title_screen_root);
@@ -59,17 +63,21 @@ public class TitleScreenActivity extends AppCompatActivity {
     }
 
     private void fadeInMusic() {
+        if (mediaPlayer == null) return;
+
         final float maxVolume = 1.0f;
-        final int fadeDuration = 3000; // milliseconds
-        final int fadeStep = 100; // how often to step
+        final int fadeDuration = 3000;
+        final int fadeStep = 100;
         final float volumeStep = maxVolume / (fadeDuration / fadeStep);
 
-        final Handler handler = new Handler();
+        final Handler handler = new Handler(Looper.getMainLooper());
         handler.postDelayed(new Runnable() {
             float volume = 0f;
 
             @Override
             public void run() {
+                if (mediaPlayer == null) return;
+
                 if (volume < maxVolume) {
                     volume += volumeStep;
                     mediaPlayer.setVolume(volume, volume);
@@ -82,16 +90,23 @@ public class TitleScreenActivity extends AppCompatActivity {
     }
 
     private void fadeOutMusicAndFinish(final Runnable onComplete) {
+        if (mediaPlayer == null) {
+            if (onComplete != null) onComplete.run();
+            return;
+        }
+
         final int fadeDuration = 2000;
         final int fadeStep = 100;
         final float volumeStep = 1.0f / (fadeDuration / fadeStep);
 
-        final Handler handler = new Handler();
+        final Handler handler = new Handler(Looper.getMainLooper());
         handler.postDelayed(new Runnable() {
             float volume = 1.0f;
 
             @Override
             public void run() {
+                if (mediaPlayer == null) return;
+
                 if (volume > 0f) {
                     volume -= volumeStep;
                     mediaPlayer.setVolume(volume, volume);
@@ -99,11 +114,13 @@ public class TitleScreenActivity extends AppCompatActivity {
                 } else {
                     mediaPlayer.stop();
                     mediaPlayer.release();
+                    mediaPlayer = null;
                     if (onComplete != null) onComplete.run();
                 }
             }
         }, fadeStep);
     }
+
 
     @Override
     protected void onDestroy() {

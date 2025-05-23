@@ -3,6 +3,7 @@ package com.example.finaltermproject;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -10,6 +11,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
 import java.util.List;
 
 public class GameActivity extends AppCompatActivity {
@@ -74,7 +77,7 @@ public class GameActivity extends AppCompatActivity {
 
             Button backButton = new Button(this);
             backButton.setText("Back to Menu");
-            backButton.setOnClickListener(v -> finish());
+            backButton.setOnClickListener(v -> fadeOutMusicAndFinish(this::finish));
             choiceContainer.addView(backButton);
             return;
         } else {
@@ -95,7 +98,7 @@ public class GameActivity extends AppCompatActivity {
             Button choiceButton = new Button(this);
             choiceButton.setText(choice.getChoiceText());
             choiceButton.setBackgroundResource(R.drawable.choice_button_background);
-            choiceButton.setTextColor(getResources().getColor(android.R.color.white));
+            choiceButton.setTextColor(ContextCompat.getColor(this, android.R.color.white));
             choiceButton.setTextSize(16);
             choiceButton.setAllCaps(false);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
@@ -131,7 +134,7 @@ public class GameActivity extends AppCompatActivity {
         final int step = 100;
         final float delta = maxVolume / (duration / step);
 
-        final Handler handler = new Handler();
+        final Handler handler = new Handler(Looper.getMainLooper());
         handler.postDelayed(new Runnable() {
             float volume = 0f;
 
@@ -153,7 +156,7 @@ public class GameActivity extends AppCompatActivity {
         final int step = 100;
         final float delta = 1.0f / (duration / step);
 
-        final Handler handler = new Handler();
+        final Handler handler = new Handler(Looper.getMainLooper());
         handler.postDelayed(new Runnable() {
             float volume = 1.0f;
 

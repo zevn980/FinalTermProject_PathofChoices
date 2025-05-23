@@ -16,7 +16,7 @@
         android:id="@+id/titleText"
         android:layout_width="223dp"
         android:layout_height="142dp"
-        android:fontFamily="@font/cinzel_decorative"
+        android:fontFamily="@font/cinzeldecorative_bold"
         android:gravity="center"
         android:shadowColor="#AA000000"
         android:shadowDx="2"

@@ -12,11 +12,11 @@
         android:id="@+id/menuTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/cinzel_decorative"
+        android:fontFamily="@font/cinzeldecorative_bold"
         android:gravity="center"
-        android:text="Path Of Choices"
+        android:text="Path of\nChoices"
         android:textColor="@android:color/white"
-        android:textSize="32sp"
+        android:textSize="50sp"
         android:textStyle="bold"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/menuButtonsContainer"
@@ -42,7 +42,8 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:text="Manage Users"
-            android:textColor="#1e315b"
+            android:textColor="#FFFF"
+            android:backgroundTint="#1e315b"
             android:layout_marginTop="16dp" />
 
         <Button
@@ -50,7 +51,8 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:text="Start New Story"
-            android:textColor="#1e315b"
+            android:textColor="#FFFF"
+            android:backgroundTint="#1e315b"
             android:layout_marginTop="16dp" />
 
         <Button
@@ -58,7 +60,8 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:text="Continue"
-            android:textColor="#1e315b"
+            android:textColor="#FFFF"
+            android:backgroundTint="#1e315b"
             android:layout_marginTop="16dp" />
 
         <Button
@@ -66,7 +69,8 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:text="Exit"
-            android:textColor="#1e315b"
+            android:textColor="#FFFF"
+            android:backgroundTint="#1e315b"
             android:layout_marginTop="16dp" />
 
     </LinearLayout>
