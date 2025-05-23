@@ -5,7 +5,7 @@
     android:id="@+id/gameRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#1C104F"
+    android:background="#1e315b"
     android:padding="16dp">
 
     <!-- Optional Character Image -->
