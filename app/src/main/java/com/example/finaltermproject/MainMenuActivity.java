@@ -1,6 +1,7 @@
 package com.example.finaltermproject;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -11,6 +12,7 @@ public class MainMenuActivity extends AppCompatActivity {
 
     private Button btnNewStory, btnContinue, btnExit, userButton;
     private DatabaseHelper db;
+    private MediaPlayer backgroundMusic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +26,10 @@ public class MainMenuActivity extends AppCompatActivity {
         btnContinue = findViewById(R.id.btnContinue);
         btnExit = findViewById(R.id.btnExit);
         userButton = findViewById(R.id.userButton);
+
+        backgroundMusic = MediaPlayer.create(this, R.raw.menu_music);
+        backgroundMusic.setLooping(true);
+        backgroundMusic.start();
 
         // Start new story
         btnNewStory.setOnClickListener(new View.OnClickListener() {
@@ -71,6 +77,32 @@ public class MainMenuActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         updateButtonStates();
+
+        // 🎵 Resume music if not playing
+        if (backgroundMusic != null && !backgroundMusic.isPlaying()) {
+            backgroundMusic.start();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // 🎵 Pause music when activity is not in foreground
+        if (backgroundMusic != null && backgroundMusic.isPlaying()) {
+            backgroundMusic.pause();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        // 🎵 Release media player resources
+        if (backgroundMusic != null) {
+            backgroundMusic.release();
+            backgroundMusic = null;
+        }
     }
 
     private boolean checkUserSelected() {
