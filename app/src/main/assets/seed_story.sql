@@ -12,7 +12,7 @@ INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES
 --SEGMENT 2 – THE UNRAVELING
 
   -- 2A: Arbiter's Scroll
-  INSERT INTO dialogs (id, text) VALUES (11, 'You and Viren study ancient codes. The prophecy wasn’t part of Caelondria''s divine law—it predates it.');
+  INSERT INTO dialogs (id, text) VALUES (11, 'You and Viren study ancient codes. The prophecy wasn''t part of Caelondria''s divine law—it predates it.');
   INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES
   (11, 'Confront the Scale itself by requesting an Audience of Judgment.', 111),
   (11, 'Seek the Lustrines for their memory of Caelondria before the courts.', 112),
@@ -46,7 +46,99 @@ INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES
   (15, 'Ask to join their memorystream.', 152),
   (15, 'Steal a relic of memory and flee.', 153);
 
-  --SEGMENT 3 – VERDICT’S EDGE
+--SEGMENT 3 – THE DEEPER MYSTERIES (Missing dialogs added)
+
+  -- 3A1: Audience of Judgment
+  INSERT INTO dialogs (id, text) VALUES (111, 'The Aetherial Scale responds to your challenge. Its voice echoes: "You seek to judge the judge?"');
+  INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES
+  (111, 'Demand the Scale justify its prophecy.', 301),
+  (111, 'Ask the Scale to show you the truth.', 302);
+
+  -- 3A2: Lustrine Memory
+  INSERT INTO dialogs (id, text) VALUES (112, 'The Lustrines show you visions of ancient Caelondria—a time before the Scale''s dominion.');
+  INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES
+  (112, 'Learn the original laws of the land.', 301),
+  (112, 'Witness the Scale''s first judgment.', 302);
+
+  -- 3A3: Secret Modification
+  INSERT INTO dialogs (id, text) VALUES (113, 'You attempt to alter the prophecy in secret, but the words resist your touch, burning with ancient power.');
+  INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES
+  (113, 'Force the change despite the pain.', 301),
+  (113, 'Retreat and seek another way.', 302);
+
+  -- 3B1: Diving Deep
+  INSERT INTO dialogs (id, text) VALUES (121, 'Beneath the waves, you find a sunken temple where the first Lustrines once dwelt.');
+  INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES
+  (121, 'Enter the temple.', 301),
+  (121, 'Surface and bring others.', 302);
+
+  -- 3B2: Harmonic Analysis
+  INSERT INTO dialogs (id, text) VALUES (122, 'The energy reveals a pattern—the prophecy pulses in rhythm with the city''s heartbeat.');
+  INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES
+  (122, 'Disrupt the rhythm.', 301),
+  (122, 'Follow the pattern to its source.', 302);
+
+  -- 3B3: Public Revelation
+  INSERT INTO dialogs (id, text) VALUES (123, 'Your vision spreads through the city like wildfire. The people demand answers from the courts.');
+  INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES
+  (123, 'Lead the uprising.', 301),
+  (123, 'Hide and observe the chaos.', 302);
+
+  -- 3C1: Public Accusation
+  INSERT INTO dialogs (id, text) VALUES (131, 'Your accusation shocks the crowd. Lady Selene''s mask of composure finally cracks.');
+  INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES
+  (131, 'Press your advantage.', 301),
+  (131, 'Offer her a chance to explain.', 302);
+
+  -- 3C2: Backstage Secrets
+  INSERT INTO dialogs (id, text) VALUES (132, 'Backstage, Selene reveals she''s been protecting the city from the prophecy''s true meaning.');
+  INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES
+  (132, 'Join her in the deception.', 301),
+  (132, 'Convince her to reveal the truth.', 302);
+
+  -- 3C3: False Confession
+  INSERT INTO dialogs (id, text) VALUES (133, 'Your false confession creates chaos. The real trial is forgotten as the crowd turns on you.');
+  INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES
+  (133, 'Escape in the confusion.', 301),
+  (133, 'Stand your ground and speak truth.', 302);
+
+  -- 3D1: Alliance with Maskbearer
+  INSERT INTO dialogs (id, text) VALUES (141, 'The Maskbearer shows you the Scale''s hidden weakness—it fears the people''s judgment.');
+  INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES
+  (141, 'Help them expose the Scale.', 301),
+  (141, 'Warn the Scale of the plot.', 302);
+
+  -- 3D2: Double Agent
+  INSERT INTO dialogs (id, text) VALUES (142, 'Elira trusts your report, but you sense the Maskbearer expected your betrayal.');
+  INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES
+  (142, 'Prepare for the Maskbearer''s counter-move.', 301),
+  (142, 'Try to genuinely ally with Elira.', 302);
+
+  -- 3D3: Delay and Learn
+  INSERT INTO dialogs (id, text) VALUES (143, 'The Maskbearer agrees to wait, but warns: "Time serves the prophecy, not us."');
+  INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES
+  (143, 'Use the time to gather allies.', 301),
+  (143, 'Seek the prophecy''s origin.', 302);
+
+  -- 3E1: Breaking the Cycle
+  INSERT INTO dialogs (id, text) VALUES (151, 'The Lustrines speak of a price—someone must remember all the cycles to break them.');
+  INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES
+  (151, 'Volunteer to bear the memory.', 301),
+  (151, 'Find another way.', 302);
+
+  -- 3E2: Joining the Stream
+  INSERT INTO dialogs (id, text) VALUES (152, 'In the memorystream, you experience the joy and sorrow of all who came before.');
+  INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES
+  (152, 'Merge completely with the stream.', 301),
+  (152, 'Maintain your individual identity.', 302);
+
+  -- 3E3: Stealing Memory
+  INSERT INTO dialogs (id, text) VALUES (153, 'The stolen relic burns with ancient knowledge, but the Lustrines'' cries follow you.');
+  INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES
+  (153, 'Use the relic''s power immediately.', 301),
+  (153, 'Return and seek forgiveness.', 302);
+
+  --SEGMENT 3 – VERDICT'S EDGE
 
   -- 3E: Collapse in the Crowd
   INSERT INTO dialogs (id, text) VALUES (301, 'Public panic grows. The court turns on itself. The Maskbearer declares the prophecy fulfilled.');
@@ -73,6 +165,18 @@ INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES
   INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES
   (402, 'Let the worlds merge into one.', 503),
   (402, 'Sever the link and accept your own rewritten truth.', 504);
+
+  -- 4G: Cycle Rewriter
+  INSERT INTO dialogs (id, text) VALUES (403, 'With the power to rewrite history, you feel the weight of all possible futures.');
+  INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES
+  (403, 'Create a perfect world.', 501),
+  (403, 'Preserve the imperfect truth.', 502);
+
+  -- 4H: Past Anchor
+  INSERT INTO dialogs (id, text) VALUES (404, 'You choose to live in one of the past cycles, but the present still calls to you.');
+  INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES
+  (404, 'Return to your original time.', 503),
+  (404, 'Stay in the chosen past.', 504);
 
   --SEGMENT 5 – FINALE (Endings)
 

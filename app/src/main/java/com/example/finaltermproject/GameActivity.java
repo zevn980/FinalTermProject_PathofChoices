@@ -30,46 +30,74 @@ public class GameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
-        mediaPlayer = MediaPlayer.create(this, R.raw.game_music);
-        if (mediaPlayer != null) {
-            mediaPlayer.setLooping(true);
-            mediaPlayer.setVolume(0f, 0f);
-            mediaPlayer.start();
-            fadeInMusic();
-        } else {
-            Log.e("GameActivity", "Failed to load game music.");
+        // Initialize MediaPlayer
+        try {
+            mediaPlayer = MediaPlayer.create(this, R.raw.game_music);
+            if (mediaPlayer != null) {
+                mediaPlayer.setLooping(true);
+                mediaPlayer.setVolume(0f, 0f);
+                mediaPlayer.start();
+                fadeInMusic();
+            } else {
+                Log.e("GameActivity", "Failed to load game music.");
+            }
+        } catch (Exception e) {
+            Log.e("GameActivity", "Error creating MediaPlayer: " + e.getMessage());
         }
 
-        List<Integer> missingDialogs = DatabaseHelper.getInstance(this).getDanglingNextDialogIds();
+        // Initialize UI components
+        textDialog = findViewById(R.id.textDialog);
+        choiceContainer = findViewById(R.id.choiceContainer);
 
+        // Initialize database
+        db = DatabaseHelper.getInstance(this);
+
+        // Check for dangling dialog references
+        List<Integer> missingDialogs = db.getDanglingNextDialogIds();
         if (missingDialogs.isEmpty()) {
             Log.d("DEBUG", "All next_dialog_ids have valid dialogs.");
         } else {
             Log.w("DEBUG", "Missing dialogs for the following next_dialog_ids: " + missingDialogs);
         }
 
-        textDialog = findViewById(R.id.textDialog);
-        choiceContainer = findViewById(R.id.choiceContainer); // New dynamic layout
-
-        db = DatabaseHelper.getInstance(this);
-        currentUser = UserManager.getCurrentUser(this);
-
         int count = db.getDialogCount();
         Log.d("DEBUG", "Dialog count: " + count);
 
+        // Get current user
+        currentUser = UserManager.getCurrentUser(this);
+        Log.d("DEBUG", "Current user: " + (currentUser != null ? currentUser.getUsername() + " (ID: " + currentUser.getId() + ")" : "NULL"));
+
         if (currentUser == null) {
-            Toast.makeText(this, "No user selected", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No user selected. Please select a user first.", Toast.LENGTH_LONG).show();
             finish();
             return;
         }
 
-        currentDialogId = db.getUserDialogId(currentUser.getId()); // Load saved progress
-        Log.d("DEBUG", "Loading dialog ID: " + currentDialogId);
+        // Check if this is a new story or continue
+        boolean isNewStory = getIntent().getBooleanExtra("new_story", false);
+
+        if (isNewStory) {
+            // Reset user progress to beginning
+            db.updateUserProgress(currentUser.getId(), 1);
+            currentDialogId = 1;
+            Log.d("DEBUG", "Starting new story for user: " + currentUser.getUsername());
+        } else {
+            // Load saved progress
+            currentDialogId = db.getUserDialogId(currentUser.getId());
+            Log.d("DEBUG", "Continuing story from dialog ID: " + currentDialogId);
+        }
+
         loadDialog(currentDialogId);
     }
 
     private void loadDialog(int dialogId) {
+        Log.d("DEBUG", "=== loadDialog called with ID: " + dialogId + " ===");
+        Log.d("DEBUG", "Current user: " + (currentUser != null ? currentUser.getUsername() + " (ID: " + currentUser.getId() + ")" : "NULL"));
+        Log.d("DEBUG", "Database instance: " + (db != null ? "EXISTS" : "NULL"));
+
         DialogEntry dialog = db.getDialogById(dialogId);
+        Log.d("DEBUG", "Dialog result: " + (dialog != null ? "FOUND - " + dialog.getText().substring(0, Math.min(50, dialog.getText().length())) + "..." : "NULL"));
+
         if (dialog == null) {
             Log.d("DEBUG", "DialogEntry is null for ID: " + dialogId);
             textDialog.setText("The End.");
@@ -77,7 +105,9 @@ public class GameActivity extends AppCompatActivity {
 
             Button backButton = new Button(this);
             backButton.setText("Back to Menu");
-            backButton.setOnClickListener(v -> fadeOutMusicAndFinish(this::finish));
+            backButton.setOnClickListener(v -> {
+                fadeOutMusicAndFinish(() -> finish());
+            });
             choiceContainer.addView(backButton);
             return;
         } else {
@@ -88,6 +118,7 @@ public class GameActivity extends AppCompatActivity {
         textDialog.setText(dialog.getText());
         textDialog.animate().alpha(1f).setDuration(300).start();
         List<Choice> choices = db.getChoicesForDialog(dialogId);
+        Log.d("DEBUG", "Found " + choices.size() + " choices for dialog " + dialogId);
         showChoices(choices);
     }
 
@@ -112,6 +143,7 @@ public class GameActivity extends AppCompatActivity {
                 if (!isChoiceClickable) return;
                 isChoiceClickable = false;
 
+                Log.d("DEBUG", "Choice selected: " + choice.getChoiceText() + " -> Dialog ID: " + choice.getNextDialogId());
                 db.updateUserProgress(currentUser.getId(), choice.getNextDialogId());
                 currentDialogId = choice.getNextDialogId();
                 loadDialog(currentDialogId);
@@ -129,6 +161,8 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void fadeInMusic() {
+        if (mediaPlayer == null) return;
+
         final float maxVolume = 1.0f;
         final int duration = 3000;
         final int step = 100;
@@ -140,11 +174,11 @@ public class GameActivity extends AppCompatActivity {
 
             @Override
             public void run() {
-                if (volume < maxVolume) {
+                if (mediaPlayer != null && volume < maxVolume) {
                     volume += delta;
                     mediaPlayer.setVolume(volume, volume);
                     handler.postDelayed(this, step);
-                } else {
+                } else if (mediaPlayer != null) {
                     mediaPlayer.setVolume(maxVolume, maxVolume);
                 }
             }
@@ -152,6 +186,11 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void fadeOutMusicAndFinish(Runnable onComplete) {
+        if (mediaPlayer == null) {
+            if (onComplete != null) onComplete.run();
+            return;
+        }
+
         final int duration = 2000;
         final int step = 100;
         final float delta = 1.0f / (duration / step);
@@ -162,13 +201,20 @@ public class GameActivity extends AppCompatActivity {
 
             @Override
             public void run() {
-                if (volume > 0f) {
+                if (mediaPlayer != null && volume > 0f) {
                     volume -= delta;
                     mediaPlayer.setVolume(volume, volume);
                     handler.postDelayed(this, step);
                 } else {
-                    mediaPlayer.stop();
-                    mediaPlayer.release();
+                    if (mediaPlayer != null) {
+                        try {
+                            mediaPlayer.stop();
+                            mediaPlayer.release();
+                        } catch (Exception e) {
+                            Log.e("GameActivity", "Error stopping MediaPlayer: " + e.getMessage());
+                        }
+                        mediaPlayer = null;
+                    }
                     if (onComplete != null) onComplete.run();
                 }
             }
@@ -179,7 +225,11 @@ public class GameActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         if (mediaPlayer != null) {
-            mediaPlayer.release();
+            try {
+                mediaPlayer.release();
+            } catch (Exception e) {
+                Log.e("GameActivity", "Error releasing MediaPlayer: " + e.getMessage());
+            }
             mediaPlayer = null;
         }
     }
