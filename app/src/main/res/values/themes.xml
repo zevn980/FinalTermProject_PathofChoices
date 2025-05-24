@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.FinalTermProject" parent="Theme.Material3.DayNight.NoActionBar">
@@ -5,5 +6,34 @@
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
 
-    <style name="Theme.FinalTermProject" parent="Base.Theme.FinalTermProject" />
+    <style name="Theme.FinalTermProject" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">#80A0FF</item>
+        <item name="colorPrimaryVariant">#1A1A2E</item>
+        <item name="colorOnPrimary">@color/white</item>
+        
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">#80A0FF</item>
+        <item name="colorSecondaryVariant">#2A2A4E</item>
+        <item name="colorOnSecondary">@color/white</item>
+        
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        
+        <!-- Navigation bar color. -->
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        
+        <!-- Window background. -->
+        <item name="android:windowBackground">@drawable/game_background</item>
+        
+        <!-- Custom font. -->
+        <item name="android:fontFamily">@font/genshin_font</item>
+        
+        <!-- Make the window fullscreen and edge-to-edge. -->
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
 </resources>

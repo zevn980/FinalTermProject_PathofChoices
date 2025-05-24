@@ -20,6 +20,8 @@ import android.content.res.Configuration;
 import android.os.PersistableBundle;
 import android.view.WindowManager;
 import android.content.pm.ActivityInfo;
+import android.widget.ImageView;
+import androidx.core.content.res.ResourcesCompat;
 
 import java.util.List;
 
@@ -163,7 +165,44 @@ public class GameActivity extends AppCompatActivity {
                     .start();
             }).start();
 
+        // Update character portrait based on speaker
+        updateCharacterPortrait(dialog.getText());
+
         showChoices(choices);
+    }
+
+    private void updateCharacterPortrait(String dialogText) {
+        ImageView portrait = findViewById(R.id.imageCharacter);
+        
+        // Determine which character is speaking based on the dialog text
+        if (dialogText.contains("Viren")) {
+            portrait.setImageResource(R.drawable.portrait_viren);
+        } else if (dialogText.contains("Lady Selene") || dialogText.contains("Selene")) {
+            portrait.setImageResource(R.drawable.portrait_selene);
+        } else if (dialogText.contains("Maskbearer")) {
+            portrait.setImageResource(R.drawable.portrait_maskbearer);
+        } else if (dialogText.contains("Elira")) {
+            portrait.setImageResource(R.drawable.portrait_elira);
+        } else if (dialogText.contains("Lustrine")) {
+            portrait.setImageResource(R.drawable.portrait_lustrine);
+        } else {
+            portrait.setImageResource(R.drawable.portrait_traveler);
+        }
+
+        // Animate portrait change
+        portrait.animate()
+            .scaleX(0.9f)
+            .scaleY(0.9f)
+            .alpha(0.7f)
+            .setDuration(100)
+            .withEndAction(() -> {
+                portrait.animate()
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .alpha(1f)
+                    .setDuration(200)
+                    .start();
+            }).start();
     }
 
     private void handleEndOfStory() {
@@ -195,7 +234,10 @@ public class GameActivity extends AppCompatActivity {
         button.setTextColor(ContextCompat.getColor(this, android.R.color.white));
         button.setTextSize(16);
         button.setAllCaps(false);
-        button.setTag(choice.getId()); // Add tag to identify button later
+        button.setTag(choice.getId());
+        
+        // Use custom font
+        button.setTypeface(ResourcesCompat.getFont(this, R.font.genshin_font));
         
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
@@ -205,6 +247,14 @@ public class GameActivity extends AppCompatActivity {
         button.setLayoutParams(params);
 
         button.setOnClickListener(v -> handleChoiceClick(choice));
+        
+        // Add button with animation
+        button.setAlpha(0f);
+        button.animate()
+            .alpha(1f)
+            .setDuration(200)
+            .setStartDelay(100)
+            .start();
         
         return button;
     }
