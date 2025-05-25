@@ -24,11 +24,13 @@ import java.nio.channels.FileChannel;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
+import java.util.zip.GZIPOutputStream;
+import java.util.zip.GZIPInputStream;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TAG = "DatabaseHelper";
     private static final String DB_NAME = "game.db";
-    private static final int DB_VERSION = 2;  // Increment this when schema changes
+    private static final int DB_VERSION = 3;  // Increment this when schema changes
 
     // Database creation SQL statements
     private static final String CREATE_USERS_TABLE =
@@ -66,6 +68,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "ALTER TABLE progress ADD COLUMN last_updated INTEGER DEFAULT 0;",
             "ALTER TABLE dialogs ADD COLUMN created_at INTEGER DEFAULT 0;",
             "ALTER TABLE choices ADD COLUMN created_at INTEGER DEFAULT 0;"
+    };
+
+    // Version 3 upgrade statements
+    private static final String[] VERSION_3_UPGRADES = {
+        "CREATE INDEX IF NOT EXISTS idx_progress_last_updated ON progress(last_updated);",
+        "CREATE INDEX IF NOT EXISTS idx_dialogs_created_at ON dialogs(created_at);",
+        "CREATE INDEX IF NOT EXISTS idx_choices_created_at ON choices(created_at);"
     };
 
     // Singleton implementation using atomic reference
@@ -147,6 +156,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     case 1:
                         upgradeToVersion2(db);
                         break;
+                    case 2:
+                        upgradeToVersion3(db);
+                        break;
                     // Add more cases for future versions
                     default:
                         throw new IllegalStateException("Unknown database version: " + version);
@@ -185,6 +197,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Log.d(TAG, "Version 2 upgrade completed successfully");
         } catch (Exception e) {
             Log.e(TAG, "Error during version 2 upgrade", e);
+            throw e;
+        }
+    }
+
+    private void upgradeToVersion3(SQLiteDatabase db) {
+        Log.d(TAG, "Upgrading to database version 3");
+        try {
+            // Add new indexes
+            for (String upgrade : VERSION_3_UPGRADES) {
+                db.execSQL(upgrade);
+            }
+
+            Log.d(TAG, "Version 3 upgrade completed successfully");
+        } catch (Exception e) {
+            Log.e(TAG, "Error during version 3 upgrade", e);
             throw e;
         }
     }
@@ -786,7 +813,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getReadableDatabase();
         String timestamp = String.format("%tF_%<tH%<tM%<tS", System.currentTimeMillis());
-        String backupFileName = String.format("backup_%s.db", timestamp);
+        String backupFileName = String.format("backup_%s.db.gz", timestamp);
         String backupPath = context.getFilesDir() + "/" + backupFileName;
 
         try {
@@ -803,30 +830,38 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             File backupDB = new File(backupPath);
 
             if (currentDB.exists()) {
-                // Use try-with-resources to ensure proper channel closing
-                try (FileChannel src = new FileInputStream(currentDB).getChannel();
-                     FileChannel dst = new FileOutputStream(backupDB).getChannel()) {
-                    dst.transferFrom(src, 0, src.size());
-                }
-
-                // Verify backup file exists and is readable
-                if (!backupDB.canRead()) {
-                    throw new IOException("Backup file not readable: " + backupPath);
-                }
-
-                // Clean up old backups (keep only last 5)
-                File backupDir = new File(context.getFilesDir().toString());
-                File[] backups = backupDir.listFiles((dir, name) ->
-                        name.startsWith("backup_") && name.endsWith(".db"));
-                if (backups != null && backups.length > 5) {
-                    Arrays.sort(backups, (f1, f2) ->
-                            Long.compare(f2.lastModified(), f1.lastModified()));
-                    for (int i = 5; i < backups.length; i++) {
-                        backups[i].delete();
+                // Use try-with-resources for compression
+                try (FileInputStream fis = new FileInputStream(currentDB);
+                     GZIPOutputStream gzos = new GZIPOutputStream(new FileOutputStream(backupDB))) {
+                    
+                    byte[] buffer = new byte[1024];
+                    int length;
+                    while ((length = fis.read(buffer)) > 0) {
+                        gzos.write(buffer, 0, length);
                     }
-                }
+                    gzos.finish();
 
-                Log.d(TAG, "Database backed up successfully to: " + backupPath);
+                    // Verify backup file exists and is readable
+                    if (!backupDB.canRead()) {
+                        throw new IOException("Backup file not readable: " + backupPath);
+                    }
+
+                    // Clean up old backups (keep only last 7 days of backups)
+                    File backupDir = new File(context.getFilesDir().toString());
+                    File[] backups = backupDir.listFiles((dir, name) ->
+                            name.startsWith("backup_") && name.endsWith(".db.gz"));
+                    
+                    if (backups != null) {
+                        long sevenDaysAgo = System.currentTimeMillis() - (7 * 24 * 60 * 60 * 1000L);
+                        for (File backup : backups) {
+                            if (backup.lastModified() < sevenDaysAgo) {
+                                backup.delete();
+                            }
+                        }
+                    }
+
+                    Log.d(TAG, "Database backed up successfully to: " + backupPath);
+                }
             } else {
                 throw new FileNotFoundException("Source database does not exist");
             }
@@ -846,43 +881,58 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     // Add method to restore from backup
-    public void restoreFromBackup(Context context, String backupPath) {
-        if (context == null || backupPath == null) {
-            throw new IllegalArgumentException("Context and backup path cannot be null");
+    public void restoreFromBackup(Context context, String backupFileName) {
+        if (context == null) {
+            throw new IllegalArgumentException("Context cannot be null");
+        }
+
+        String backupPath = context.getFilesDir() + "/" + backupFileName;
+        File backupFile = new File(backupPath);
+        File currentDB = context.getDatabasePath(DB_NAME);
+
+        if (!backupFile.exists()) {
+            throw new IllegalArgumentException("Backup file does not exist: " + backupPath);
         }
 
         SQLiteDatabase db = this.getWritableDatabase();
-        db.beginTransaction();
+        db.close();
+
         try {
-            // Verify backup file exists and is readable
-            java.io.File backupFile = new java.io.File(backupPath);
-            if (!backupFile.exists() || !backupFile.canRead()) {
-                throw new java.io.IOException("Backup file not accessible: " + backupPath);
+            // Create temp file for decompression
+            File tempFile = File.createTempFile("temp_db", ".db", context.getCacheDir());
+            
+            // Decompress backup
+            try (GZIPInputStream gzis = new GZIPInputStream(new FileInputStream(backupFile));
+                 FileOutputStream fos = new FileOutputStream(tempFile)) {
+                
+                byte[] buffer = new byte[1024];
+                int length;
+                while ((length = gzis.read(buffer)) > 0) {
+                    fos.write(buffer, 0, length);
+                }
             }
 
-            // Close existing database connections
-            db.close();
+            // Verify temp file integrity
+            SQLiteDatabase verifyDb = SQLiteDatabase.openDatabase(
+                tempFile.getPath(), null, SQLiteDatabase.OPEN_READONLY);
+            verifyDb.close();
 
-            // Copy backup file to database file
-            java.io.File dbFile = context.getDatabasePath(DB_NAME);
-            try (java.nio.channels.FileChannel source = new java.io.FileInputStream(backupFile).getChannel();
-                 java.nio.channels.FileChannel destination = new java.io.FileOutputStream(dbFile).getChannel()) {
-                destination.transferFrom(source, 0, source.size());
+            // Copy temp file to actual database location
+            try (FileChannel src = new FileInputStream(tempFile).getChannel();
+                 FileChannel dst = new FileOutputStream(currentDB).getChannel()) {
+                dst.transferFrom(src, 0, src.size());
             }
 
-            // Reopen database and verify integrity
-            db = this.getWritableDatabase();
-            if (!checkDatabaseIntegrity()) {
-                throw new IllegalStateException("Database integrity check failed after restore");
-            }
+            // Clean up temp file
+            tempFile.delete();
 
-            db.setTransactionSuccessful();
             Log.d(TAG, "Database restored successfully from: " + backupPath);
         } catch (Exception e) {
             Log.e(TAG, "Failed to restore database", e);
             throw new RuntimeException("Database restore failed", e);
         } finally {
-            db.endTransaction();
+            // Reopen the database
+            db = this.getWritableDatabase();
         }
     }
 
@@ -1083,5 +1133,51 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             if (str.charAt(i) == c) count++;
         }
         return count;
+    }
+
+    public int getLastWorkingDialogId(int userId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+        try {
+            // First try to get the user's current dialog
+            cursor = db.rawQuery(
+                "SELECT current_dialog_id FROM progress WHERE user_id = ?",
+                new String[]{String.valueOf(userId)}
+            );
+
+            if (cursor.moveToFirst()) {
+                int currentDialogId = cursor.getInt(0);
+                cursor.close();
+
+                // Verify if this dialog exists
+                cursor = db.rawQuery(
+                    "SELECT 1 FROM dialogs WHERE id = ?",
+                    new String[]{String.valueOf(currentDialogId)}
+                );
+
+                if (cursor.moveToFirst()) {
+                    return currentDialogId;  // Current dialog exists and is valid
+                }
+            }
+
+            // If current dialog is invalid, find the last valid dialog
+            cursor = db.rawQuery(
+                "SELECT MAX(id) FROM dialogs WHERE id <= (SELECT COALESCE(MAX(current_dialog_id), 1) FROM progress WHERE user_id = ?)",
+                new String[]{String.valueOf(userId)}
+            );
+
+            if (cursor.moveToFirst() && !cursor.isNull(0)) {
+                return cursor.getInt(0);
+            }
+
+            return 1;  // Default to first dialog if no valid dialog found
+        } catch (Exception e) {
+            Log.e(TAG, "Error getting last working dialog ID", e);
+            return 1;  // Return to first dialog on error
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
     }
 }

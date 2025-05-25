@@ -20,6 +20,8 @@ import android.content.res.Configuration;
 import android.os.PersistableBundle;
 import android.view.WindowManager;
 import android.content.pm.ActivityInfo;
+import android.content.Intent;
+import android.app.AlertDialog;
 
 import java.util.List;
 
@@ -39,6 +41,10 @@ public class GameActivity extends AppCompatActivity {
     private boolean isChoiceClickable = true;
     private float currentMusicVolume = 0f;
     private final Handler handler = new Handler(Looper.getMainLooper());
+    private static final int MAX_RETRY_ATTEMPTS = 3;
+    private static final long RETRY_DELAY_MS = 1000;
+    private int currentRetryAttempt = 0;
+    private Handler retryHandler = new Handler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -356,5 +362,96 @@ public class GameActivity extends AppCompatActivity {
         handler.removeCallbacksAndMessages(null); // Clean up all pending handlers
         releaseMediaPlayer();
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        retryHandler.removeCallbacksAndMessages(null);
+    }
+
+    private void loadDialogWithRetry(final int dialogId) {
+        try {
+            DialogEntry dialog = db.getDialogById(dialogId);
+            if (dialog != null) {
+                displayDialog(dialog);
+                currentRetryAttempt = 0; // Reset retry counter on success
+            } else {
+                handleLoadError(dialogId, new Exception("Dialog not found"));
+            }
+        } catch (Exception e) {
+            handleLoadError(dialogId, e);
+        }
+    }
+
+    private void handleLoadError(final int dialogId, Exception error) {
+        Log.e(TAG, "Error loading dialog: " + error.getMessage(), error);
+        
+        if (currentRetryAttempt < MAX_RETRY_ATTEMPTS) {
+            currentRetryAttempt++;
+            String message = String.format("Retrying... Attempt %d of %d", 
+                currentRetryAttempt, MAX_RETRY_ATTEMPTS);
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            
+            retryHandler.postDelayed(() -> loadDialogWithRetry(dialogId), RETRY_DELAY_MS);
+        } else {
+            showErrorDialog("Error Loading Story",
+                "Unable to load the story content. Would you like to:\n" +
+                "1. Return to last working state\n" +
+                "2. Restart from beginning\n" +
+                "3. Return to main menu");
+        }
+    }
+
+    private void showErrorDialog(String title, String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(title)
+               .setMessage(message)
+               .setCancelable(false)
+               .setPositiveButton("Return to Last State", (dialog, id) -> {
+                   try {
+                       int lastWorkingDialog = db.getLastWorkingDialogId(currentUser.getId());
+                       if (lastWorkingDialog > 0) {
+                           loadDialogWithRetry(lastWorkingDialog);
+                       } else {
+                           Toast.makeText(this, "Could not find last working state", 
+                               Toast.LENGTH_LONG).show();
+                           returnToMainMenu();
+                       }
+                   } catch (Exception e) {
+                       Log.e(TAG, "Error returning to last state", e);
+                       returnToMainMenu();
+                   }
+               })
+               .setNeutralButton("Restart Story", (dialog, id) -> {
+                   try {
+                       db.updateUserProgress(currentUser.getId(), 1);
+                       loadDialogWithRetry(1);
+                   } catch (Exception e) {
+                       Log.e(TAG, "Error restarting story", e);
+                       returnToMainMenu();
+                   }
+               })
+               .setNegativeButton("Main Menu", (dialog, id) -> returnToMainMenu());
+        
+        runOnUiThread(() -> {
+            AlertDialog alert = builder.create();
+            alert.show();
+        });
+    }
+
+    private void returnToMainMenu() {
+        Intent intent = new Intent(this, MainMenuActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
+    }
+
+    private void displayDialog(DialogEntry dialog) {
+        if (dialog == null) {
+            Log.e(TAG, "Attempted to display null dialog");
+            return;
+        }
+
+        runOnUiThread(() -> {
+            textDialog.setText(dialog.getText());
+            List<Choice> choices = db.getChoicesForDialog(dialog.getId());
+            showChoices(choices);
+        });
     }
 }

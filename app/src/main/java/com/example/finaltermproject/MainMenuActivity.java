@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 public class MainMenuActivity extends AppCompatActivity {
     private static final String TAG = "MainMenuActivity";
     private Button btnNewStory, btnContinue, btnExit, userButton;
+    private TextView userPrompt;
     private DatabaseHelper db;
 
     @Override
@@ -38,6 +40,7 @@ public class MainMenuActivity extends AppCompatActivity {
                 btnContinue = findViewById(R.id.btnContinue);
                 btnExit = findViewById(R.id.btnExit);
                 userButton = findViewById(R.id.userButton);
+                userPrompt = findViewById(R.id.userPrompt);
                 Log.d(TAG, "onCreate: Buttons initialized successfully");
             } catch (Exception e) {
                 Log.e(TAG, "onCreate: Failed to initialize buttons", e);
@@ -101,6 +104,9 @@ public class MainMenuActivity extends AppCompatActivity {
                     }
                 }
             });
+
+            // Initial button states
+            updateButtonStates();
         } catch (Exception e) {
             Log.e(TAG, "onCreate: Fatal error in MainMenuActivity", e);
             Toast.makeText(this, "Fatal error in menu", Toast.LENGTH_LONG).show();
@@ -124,7 +130,7 @@ public class MainMenuActivity extends AppCompatActivity {
         try {
             User currentUser = UserManager.getCurrentUser(this);
             if (currentUser == null) {
-                Toast.makeText(this, "Please select a user first!", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Please select a player first!", Toast.LENGTH_LONG).show();
                 // Automatically open user management
                 Intent intent = new Intent(this, UserManagementActivity.class);
                 startActivity(intent);
@@ -145,20 +151,28 @@ public class MainMenuActivity extends AppCompatActivity {
 
             btnNewStory.setEnabled(userSelected);
             btnContinue.setEnabled(userSelected);
+            userPrompt.setVisibility(userSelected ? View.GONE : View.VISIBLE);
 
             if (userSelected) {
-                userButton.setText("User: " + currentUser.getUsername());
+                userButton.setText("Player: " + currentUser.getUsername());
                 Log.d(TAG, "updateButtonStates: Current user is " + currentUser.getUsername());
             } else {
-                userButton.setText("Select User");
+                userButton.setText("Select Player");
                 Log.d(TAG, "updateButtonStates: No user selected");
             }
+
+            // Visual feedback for disabled buttons
+            btnNewStory.setAlpha(userSelected ? 1.0f : 0.5f);
+            btnContinue.setAlpha(userSelected ? 1.0f : 0.5f);
         } catch (Exception e) {
             Log.e(TAG, "updateButtonStates: Error updating button states", e);
             // Set safe default states
             btnNewStory.setEnabled(false);
             btnContinue.setEnabled(false);
-            userButton.setText("Select User");
+            userButton.setText("Select Player");
+            userPrompt.setVisibility(View.VISIBLE);
+            btnNewStory.setAlpha(0.5f);
+            btnContinue.setAlpha(0.5f);
         }
     }
 }
