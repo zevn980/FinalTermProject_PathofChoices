@@ -15,6 +15,7 @@ import android.widget.Toast;
 import android.widget.ProgressBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 import android.content.res.Configuration;
 import android.os.PersistableBundle;
@@ -23,7 +24,7 @@ import android.content.pm.ActivityInfo;
 
 import java.util.List;
 
-public class GameActivity extends AppCompatActivity {
+public class GameActivity extends AppCompatActivity implements NewUserDialogFragment.OnUserCreatedListener{
     private static final String TAG = "GameActivity";
     private static final String KEY_DIALOG_ID = "current_dialog_id";
     private static final String KEY_MUSIC_VOLUME = "music_volume";
@@ -58,6 +59,20 @@ public class GameActivity extends AppCompatActivity {
 
         // Initialize database
         db = DatabaseHelper.getInstance(this);
+        List<User> allUsers = db.getAllUsers();
+
+        if (allUsers.isEmpty()) {
+            // Show dialog fragment
+            new NewUserDialogFragment().show(getSupportFragmentManager(), "NewUserDialog");
+            return;
+        }
+
+        currentUser = UserManager.getCurrentUser(this);
+        if (currentUser == null) {
+            Toast.makeText(this, "No user selected", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
 
         try {
             // Verify and repair story data if needed
@@ -70,14 +85,6 @@ public class GameActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e(TAG, "Error verifying story data", e);
             Toast.makeText(this, "Error loading story data", Toast.LENGTH_LONG).show();
-            finish();
-            return;
-        }
-
-        // Get current user
-        currentUser = UserManager.getCurrentUser(this);
-        if (currentUser == null) {
-            Toast.makeText(this, "No user selected. Please select a user first.", Toast.LENGTH_LONG).show();
             finish();
             return;
         }
@@ -108,6 +115,15 @@ public class GameActivity extends AppCompatActivity {
                 handler.postDelayed(this, 300000); // Every 5 minutes
             }
         }, 300000);
+    }
+
+    @Override
+    public void onUserCreated(User newUser) {
+        UserManager.setCurrentUser(this, newUser);
+        currentUser = newUser;
+        db.updateUserProgress(currentUser.getId(), 1);
+        currentDialogId = 1;
+        loadDialog(currentDialogId);
     }
 
     private void initializeMediaPlayer() {

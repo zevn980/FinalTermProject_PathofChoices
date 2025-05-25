@@ -114,9 +114,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 
                 // Set initial timestamps
                 long currentTime = System.currentTimeMillis();
-                db.execSQL("UPDATE progress SET last_updated = ?", new String[]{String.valueOf(currentTime)});
-                db.execSQL("UPDATE dialogs SET created_at = ?", new String[]{String.valueOf(currentTime)});
-                db.execSQL("UPDATE choices SET created_at = ?", new String[]{String.valueOf(currentTime)});
+                db.execSQL("UPDATE progress SET last_updated = ?", new Object[]{String.valueOf(currentTime)});
+                db.execSQL("UPDATE dialogs SET created_at = ?", new Object[]{String.valueOf(currentTime)});
+                db.execSQL("UPDATE choices SET created_at = ?", new Object[]{String.valueOf(currentTime)});
 
                 // Verify and repair story data
                 verifyAndRepairStoryData();
@@ -301,31 +301,38 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.beginTransaction();
         try {
-            // Check if username already exists
-            Cursor cursor = db.query("users", new String[]{"id"}, "username = ?",
-                    new String[]{username}, null, null, null);
-            
-            if (cursor != null && cursor.moveToFirst()) {
-                cursor.close();
-                throw new IllegalStateException("Username already exists: " + username);
-            }
+            // Check if the username already exists
+            Cursor cursor = db.query(
+                    "users",
+                    new String[]{"id"},
+                    "username = ?",
+                    new String[]{username.trim()},
+                    null, null, null
+            );
+
+            boolean exists = false;
             if (cursor != null) {
+                exists = cursor.moveToFirst();
                 cursor.close();
             }
 
+            if (exists) {
+                throw new IllegalStateException("Username already exists: " + username);
+            }
+
+            // Insert new user
             ContentValues values = new ContentValues();
             values.put("username", username.trim());
-            
             long userId = db.insertOrThrow("users", null, values);
-            
-            // Initialize progress for new user with first dialog
+
+            // Initialize progress for new user
             if (userId != -1) {
-                values = new ContentValues();
-                values.put("user_id", userId);
-                values.put("current_dialog_id", 1); // Assuming 1 is the first dialog ID
-                db.insertOrThrow("progress", null, values);
+                ContentValues progressValues = new ContentValues();
+                progressValues.put("user_id", userId);
+                progressValues.put("current_dialog_id", 1); // Assuming 1 is the starting dialog
+                db.insertOrThrow("progress", null, progressValues);
             }
-            
+
             db.setTransactionSuccessful();
             return userId;
         } finally {
