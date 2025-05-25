@@ -3,46 +3,88 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.finaltermproject">
 
+    <!-- Permissions -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" 
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
+
+    <!-- Features -->
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.screen.portrait"
+        android:required="true" />
 
     <application
         android:allowBackup="true"
-        android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
+        android:dataExtractionRules="@xml/data_extraction_rules"
         android:icon="@drawable/logo"
         android:label="Path Of Choices"
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.FinalTermProject"
+        android:resizeableActivity="false"
+        android:requestLegacyExternalStorage="true"
+        android:preserveLegacyExternalStorage="true"
+        android:hardwareAccelerated="true"
+        android:largeHeap="true"
         tools:targetApi="31">
 
-        <!-- Launch Screen -->
+        <!-- Launch/Title Screen -->
         <activity
             android:name=".TitleScreenActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.FinalTermProject.NoActionBar"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 
-        <!-- Add these: -->
+        <!-- Main Menu -->
         <activity
             android:name=".MainMenuActivity"
-            android:windowSoftInputMode="adjustResize" />
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.FinalTermProject"
+            android:windowSoftInputMode="adjustResize"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
+            android:launchMode="singleTop" />
+
+        <!-- User Management -->
         <activity
             android:name=".UserManagementActivity"
-            android:windowSoftInputMode="adjustResize" />
+            android:label="@string/user_management"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.FinalTermProject"
+            android:windowSoftInputMode="adjustResize"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden" />
+
+        <!-- Game Activity -->
         <activity
             android:name=".GameActivity"
-            android:configChanges="orientation|screenSize"
+            android:label="@string/game"
             android:screenOrientation="portrait"
+            android:theme="@style/Theme.FinalTermProject.Fullscreen"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
             android:windowSoftInputMode="adjustResize" />
 
+        <!-- Metadata -->
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+
+        <!-- Backup configuration -->
+        <meta-data
+            android:name="com.google.android.backup.api_key"
+            android:value="AEdPqrEAAAAI..." />
     </application>
+
 </manifest>

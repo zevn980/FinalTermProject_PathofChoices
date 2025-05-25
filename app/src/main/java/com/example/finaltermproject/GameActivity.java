@@ -59,9 +59,19 @@ public class GameActivity extends AppCompatActivity {
         // Initialize database
         db = DatabaseHelper.getInstance(this);
 
-        // Validate story consistency
-        if (!db.validateStoryConsistency()) {
-            Toast.makeText(this, "Warning: Story consistency issues detected", Toast.LENGTH_LONG).show();
+        try {
+            // Verify and repair story data if needed
+            db.verifyAndRepairStoryData();
+            
+            // Validate story consistency
+            if (!db.validateStoryConsistency()) {
+                Toast.makeText(this, "Warning: Story consistency issues detected", Toast.LENGTH_LONG).show();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error verifying story data", e);
+            Toast.makeText(this, "Error loading story data", Toast.LENGTH_LONG).show();
+            finish();
+            return;
         }
 
         // Get current user

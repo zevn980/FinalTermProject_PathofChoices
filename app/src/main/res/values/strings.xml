@@ -1,3 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">FinalTermProject</string>
+    <string name="app_name">Path Of Choices</string>
+    <string name="user_management">User Management</string>
+    <string name="game">Game</string>
 </resources>

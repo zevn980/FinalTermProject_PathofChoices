@@ -43,7 +43,7 @@ INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES
   INSERT INTO dialogs (id, text) VALUES (15, 'The Lustrines reveal the Prophecy is a repeating cycle—Caelondria has been reborn many times.');
   INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES
   (15, 'Ask how to break the cycle.', 151),
-  (15, 'Ask to join their memorystream.', 152),
+  (15, 'Ask to join their memory stream.', 152),
   (15, 'Steal a relic of memory and flee.', 153);
 
 --SEGMENT 3 – THE DEEPER MYSTERIES (Missing dialogs added)
