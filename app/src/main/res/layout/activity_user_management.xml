@@ -21,12 +21,39 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"/>
 
+    <!-- Empty State Message -->
+    <TextView
+        android:id="@+id/emptyStateMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No players yet. Create your first player!"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/userListTitle"
+        app:layout_constraintBottom_toTopOf="@id/btnCreateUser"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Create User Button -->
+    <Button
+        android:id="@+id/btnCreateUser"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="CREATE NEW PLAYER"
+        android:textAllCaps="false"
+        android:backgroundTint="#1e315b"
+        android:textColor="@android:color/white"
+        app:layout_constraintTop_toBottomOf="@id/userListTitle"
+        android:layout_marginTop="16dp"/>
+
     <!-- RecyclerView for Users -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewUsers"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/userListTitle"
+        app:layout_constraintTop_toBottomOf="@id/btnCreateUser"
         app:layout_constraintBottom_toTopOf="@id/btnBackToMenu"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
