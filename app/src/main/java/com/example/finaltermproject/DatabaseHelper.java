@@ -102,10 +102,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.beginTransaction();
         try {
             Log.d(TAG, "Creating database tables...");
-            
+
             // Enable foreign key support first
             db.execSQL("PRAGMA foreign_keys = ON;");
-            
+
             // Create tables in correct order due to foreign key constraints
             db.execSQL(CREATE_USERS_TABLE);
             db.execSQL(CREATE_DIALOGS_TABLE.replace("TIMESTAMP DEFAULT CURRENT_TIMESTAMP", "INTEGER DEFAULT 0"));
@@ -117,18 +117,47 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 db.execSQL(index);
             }
 
-            // Seed initial data
+            // Seed initial data with enhanced error handling
             if (applicationContext != null) {
-                executeSqlScript(db, applicationContext, "seed_story.sql");
-                
-                // Set initial timestamps
-                long currentTime = System.currentTimeMillis();
-                db.execSQL("UPDATE progress SET last_updated = ?", new String[]{String.valueOf(currentTime)});
-                db.execSQL("UPDATE dialogs SET created_at = ?", new String[]{String.valueOf(currentTime)});
-                db.execSQL("UPDATE choices SET created_at = ?", new String[]{String.valueOf(currentTime)});
+                try {
+                    // Try to load main story first
+                    if (isAssetAvailable(applicationContext, "seed_story.sql")) {
+                        executeSqlScript(db, applicationContext, "seed_story.sql");
+                    } else {
+                        Log.w(TAG, "Main story file not found, creating fallback story");
+                        FallbackStoryCreator.createMinimalStory(db);
+                    }
 
-                // Verify and repair story data
-                verifyAndRepairStoryData();
+                    // Validate story structure
+                    if (!FallbackStoryCreator.validateStoryStructure(db)) {
+                        Log.e(TAG, "Story validation failed, creating emergency story");
+                        // Clear any partial data
+                        db.execSQL("DELETE FROM choices");
+                        db.execSQL("DELETE FROM dialogs");
+                        FallbackStoryCreator.createEmergencyStory(db);
+                    }
+
+                    // Set initial timestamps
+                    long currentTime = System.currentTimeMillis();
+                    db.execSQL("UPDATE progress SET last_updated = ?", new String[]{String.valueOf(currentTime)});
+                    db.execSQL("UPDATE dialogs SET created_at = ?", new String[]{String.valueOf(currentTime)});
+                    db.execSQL("UPDATE choices SET created_at = ?", new String[]{String.valueOf(currentTime)});
+
+                    // Verify and repair story data
+                    verifyAndRepairStoryData();
+
+                } catch (Exception storyError) {
+                    Log.e(TAG, "Error loading story data, creating emergency fallback", storyError);
+                    try {
+                        // Clear any partial data and create absolute minimum
+                        db.execSQL("DELETE FROM choices");
+                        db.execSQL("DELETE FROM dialogs");
+                        FallbackStoryCreator.createEmergencyStory(db);
+                    } catch (Exception emergencyError) {
+                        Log.e(TAG, "Failed to create emergency story", emergencyError);
+                        throw new RuntimeException("Critical: Cannot create any story content", emergencyError);
+                    }
+                }
             } else {
                 Log.e(TAG, "ApplicationContext was null during database creation");
                 throw new RuntimeException("ApplicationContext was null during database creation");
@@ -224,40 +253,64 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Database operations with transaction support
     public boolean hasUsers() {
-        SQLiteDatabase db = this.getReadableDatabase();
+        SQLiteDatabase db = null;
         Cursor cursor = null;
         try {
+            db = this.getReadableDatabase();
             cursor = db.rawQuery("SELECT 1 FROM users LIMIT 1", null);
-            return cursor.moveToFirst();
+            boolean hasUsers = cursor != null && cursor.moveToFirst();
+            Log.d(TAG, "hasUsers: " + hasUsers);
+            return hasUsers;
+        } catch (Exception e) {
+            Log.e(TAG, "Error checking if users exist", e);
+            return false;
         } finally {
             if (cursor != null) {
-                cursor.close();
+                try {
+                    cursor.close();
+                } catch (Exception e) {
+                    Log.e(TAG, "Error closing cursor", e);
+                }
             }
         }
     }
 
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
+        SQLiteDatabase db = null;
         Cursor cursor = null;
 
         try {
-            // Use parameterized query even though there are no parameters
+            db = this.getReadableDatabase();
             cursor = db.rawQuery("SELECT id, username FROM users ORDER BY id", null);
-            if (cursor.moveToFirst()) {
+
+            if (cursor != null && cursor.moveToFirst()) {
                 do {
-                    int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
-                    String username = cursor.getString(cursor.getColumnIndexOrThrow("username"));
-                    users.add(new User(id, username));
+                    try {
+                        int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+                        String username = cursor.getString(cursor.getColumnIndexOrThrow("username"));
+                        if (username != null && !username.trim().isEmpty()) {
+                            users.add(new User(id, username));
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error reading user from cursor", e);
+                        // Continue with next user instead of failing completely
+                    }
                 } while (cursor.moveToNext());
             }
+
+            Log.d(TAG, "Retrieved " + users.size() + " users from database");
             return users;
         } catch (Exception e) {
             Log.e(TAG, "Error getting all users", e);
-            throw new RuntimeException("Failed to get users", e);
+            return users; // Return empty list instead of throwing exception
         } finally {
             if (cursor != null && !cursor.isClosed()) {
-                cursor.close();
+                try {
+                    cursor.close();
+                } catch (Exception e) {
+                    Log.e(TAG, "Error closing cursor", e);
+                }
             }
         }
     }
@@ -325,36 +378,60 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             throw new IllegalArgumentException("Username cannot be null or empty");
         }
 
+        String trimmedUsername = username.trim();
+
+        // Validate username format
+        if (trimmedUsername.length() < 3) {
+            throw new IllegalArgumentException("Username must be at least 3 characters long");
+        }
+        if (trimmedUsername.length() > 30) {
+            throw new IllegalArgumentException("Username cannot be longer than 30 characters");
+        }
+
         SQLiteDatabase db = this.getWritableDatabase();
         db.beginTransaction();
         try {
             // Check if username already exists
             Cursor cursor = db.query("users", new String[]{"id"}, "username = ?",
-                    new String[]{username}, null, null, null);
-            
+                    new String[]{trimmedUsername}, null, null, null);
+
             if (cursor != null && cursor.moveToFirst()) {
                 cursor.close();
-                throw new IllegalStateException("Username already exists: " + username);
+                throw new IllegalStateException("Username already exists: " + trimmedUsername);
             }
             if (cursor != null) {
                 cursor.close();
             }
 
             ContentValues values = new ContentValues();
-            values.put("username", username.trim());
-            
+            values.put("username", trimmedUsername);
+
             long userId = db.insertOrThrow("users", null, values);
-            
+
             // Initialize progress for new user with first dialog
             if (userId != -1) {
+                // Find the first available dialog
+                Cursor dialogCursor = db.rawQuery("SELECT MIN(id) FROM dialogs", null);
+                int firstDialogId = 1; // Default
+                if (dialogCursor.moveToFirst() && !dialogCursor.isNull(0)) {
+                    firstDialogId = dialogCursor.getInt(0);
+                }
+                dialogCursor.close();
+
                 values = new ContentValues();
                 values.put("user_id", userId);
-                values.put("current_dialog_id", 1); // Assuming 1 is the first dialog ID
+                values.put("current_dialog_id", firstDialogId);
+                values.put("last_updated", System.currentTimeMillis());
                 db.insertOrThrow("progress", null, values);
+
+                Log.d(TAG, "User created successfully: " + trimmedUsername + " (ID: " + userId + ")");
             }
-            
+
             db.setTransactionSuccessful();
             return userId;
+        } catch (Exception e) {
+            Log.e(TAG, "Error adding user: " + trimmedUsername, e);
+            throw e; // Re-throw to maintain existing error handling
         } finally {
             db.endTransaction();
         }
@@ -378,31 +455,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.beginTransaction();
         try {
-            // Verify dialog exists
-            Cursor dialogCheck = db.rawQuery("SELECT 1 FROM dialogs WHERE id = ?",
-                    new String[]{String.valueOf(newDialogId)});
-            boolean dialogExists = dialogCheck.moveToFirst();
-            dialogCheck.close();
-
-            if (!dialogExists) {
-                // If the dialog doesn't exist, try to find the closest valid dialog
-                Cursor nextValidDialog = db.rawQuery(
-                    "SELECT id FROM dialogs WHERE id > ? ORDER BY id ASC LIMIT 1",
-                    new String[]{String.valueOf(newDialogId - 1)}
-                );
-
-                if (nextValidDialog.moveToFirst()) {
-                    newDialogId = nextValidDialog.getInt(0);
-                    Log.w(TAG, "Redirecting to next valid dialog: " + newDialogId);
-                } else {
-                    // If no next dialog found, go to the first dialog
-                    newDialogId = 1;
-                    Log.w(TAG, "No valid next dialog found, returning to start");
-                }
-                nextValidDialog.close();
-            }
-
-            // Verify user exists
+            // Verify user exists first
             Cursor userCheck = db.rawQuery("SELECT 1 FROM users WHERE id = ?",
                     new String[]{String.valueOf(userId)});
             boolean userExists = userCheck.moveToFirst();
@@ -410,6 +463,38 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             if (!userExists) {
                 throw new IllegalArgumentException("User does not exist: " + userId);
+            }
+
+            // Verify dialog exists, with fallback handling
+            Cursor dialogCheck = db.rawQuery("SELECT 1 FROM dialogs WHERE id = ?",
+                    new String[]{String.valueOf(newDialogId)});
+            boolean dialogExists = dialogCheck.moveToFirst();
+            dialogCheck.close();
+
+            if (!dialogExists) {
+                Log.w(TAG, "Dialog " + newDialogId + " does not exist, finding fallback");
+
+                // Try to find the closest valid dialog
+                Cursor nextValidDialog = db.rawQuery(
+                        "SELECT id FROM dialogs WHERE id >= ? ORDER BY id ASC LIMIT 1",
+                        new String[]{String.valueOf(newDialogId)}
+                );
+
+                if (nextValidDialog.moveToFirst()) {
+                    newDialogId = nextValidDialog.getInt(0);
+                    Log.w(TAG, "Using fallback dialog: " + newDialogId);
+                } else {
+                    // If no dialog found at or after the requested ID, try from the beginning
+                    Cursor firstDialog = db.rawQuery("SELECT MIN(id) FROM dialogs", null);
+                    if (firstDialog.moveToFirst() && !firstDialog.isNull(0)) {
+                        newDialogId = firstDialog.getInt(0);
+                        Log.w(TAG, "Using first available dialog: " + newDialogId);
+                    } else {
+                        throw new RuntimeException("No dialogs available in database");
+                    }
+                    firstDialog.close();
+                }
+                nextValidDialog.close();
             }
 
             ContentValues values = new ContentValues();
@@ -457,11 +542,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 logDatabaseOperation("getDialogById", "Found dialog: " + dialog.getId());
                 return dialog;
             }
-            logDatabaseOperation("getDialogById", "Dialog not found");
+
+            Log.w(TAG, "Dialog not found: " + dialogId);
             return null;
         } catch (Exception e) {
             logDatabaseError("getDialogById", e);
-            throw new RuntimeException("Failed to get dialog", e);
+            return null; // Return null instead of throwing exception
         } finally {
             if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
@@ -469,9 +555,55 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    private void createFallbackStoryData(SQLiteDatabase db) {
+        Log.w(TAG, "Creating fallback story data");
+        try {
+            // Create minimal story structure
+            db.execSQL("INSERT INTO dialogs (id, text, created_at) VALUES (1, 'Welcome to the story. This is a fallback dialog created when the main story file could not be loaded.', ?)",
+                    new String[]{String.valueOf(System.currentTimeMillis())});
+
+            db.execSQL("INSERT INTO choices (dialog_id, choice_text, next_dialog_id, created_at) VALUES (1, 'Start the adventure', 2, ?)",
+                    new String[]{String.valueOf(System.currentTimeMillis())});
+
+            db.execSQL("INSERT INTO dialogs (id, text, created_at) VALUES (2, 'Thank you for playing. The full story will be available once the story file is properly loaded.', ?)",
+                    new String[]{String.valueOf(System.currentTimeMillis())});
+
+            Log.d(TAG, "Fallback story data created successfully");
+        } catch (Exception e) {
+            Log.e(TAG, "Error creating fallback story data", e);
+            throw new RuntimeException("Failed to create fallback story data", e);
+        }
+    }
+
+    private boolean isAssetAvailable(Context context, String filename) {
+        if (context == null || filename == null) return false;
+
+        try {
+            String[] assets = context.getAssets().list("");
+            if (assets != null) {
+                for (String asset : assets) {
+                    if (asset.equals(filename)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        } catch (Exception e) {
+            Log.e(TAG, "Error checking asset availability: " + filename, e);
+            return false;
+        }
+    }
+
     private void executeSqlScript(SQLiteDatabase db, Context context, String filename) {
         if (context == null || filename == null) {
             throw new IllegalArgumentException("Context and filename cannot be null");
+        }
+
+        // Check if asset exists first
+        if (!isAssetAvailable(context, filename)) {
+            Log.e(TAG, "Asset not found: " + filename + ". Creating fallback data.");
+            createFallbackStoryData(db);
+            return;
         }
 
         BufferedReader reader = null;
@@ -494,23 +626,49 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         db.execSQL(sql);
                     } catch (SQLException e) {
                         Log.e(TAG, "Error executing SQL statement: " + sql, e);
-                        throw e;
+                        // Continue with other statements instead of failing completely
                     }
                     statement.setLength(0);
                 }
             }
+
+            // Verify that we have at least basic story data
+            if (!hasMinimumStoryData(db)) {
+                Log.w(TAG, "Minimum story data not found, creating fallback");
+                createFallbackStoryData(db);
+            }
+
         } catch (IOException e) {
             Log.e(TAG, "Error reading SQL script: " + filename, e);
-            throw new RuntimeException("Failed to read SQL script: " + filename, e);
+            createFallbackStoryData(db);
         } catch (Exception e) {
             Log.e(TAG, "Error executing SQL script: " + filename, e);
-            throw new RuntimeException("Failed to execute SQL script: " + filename, e);
+            createFallbackStoryData(db);
         } finally {
             try {
                 if (reader != null) reader.close();
                 if (inputStream != null) inputStream.close();
             } catch (IOException e) {
                 Log.e(TAG, "Error closing resources", e);
+            }
+        }
+    }
+
+    private boolean hasMinimumStoryData(SQLiteDatabase db) {
+        Cursor cursor = null;
+        try {
+            cursor = db.rawQuery("SELECT COUNT(*) FROM dialogs", null);
+            if (cursor.moveToFirst()) {
+                int count = cursor.getInt(0);
+                return count > 0;
+            }
+            return false;
+        } catch (Exception e) {
+            Log.e(TAG, "Error checking minimum story data", e);
+            return false;
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
             }
         }
     }
@@ -710,30 +868,39 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try {
             cursor = db.rawQuery(
                     "SELECT c.id, c.dialog_id, c.choice_text, c.next_dialog_id, c.created_at " +
-                    "FROM choices c " +
-                    "INNER JOIN dialogs d1 ON c.dialog_id = d1.id " +
-                    "INNER JOIN dialogs d2 ON c.next_dialog_id = d2.id " +
-                    "WHERE c.dialog_id = ? " +
-                    "ORDER BY c.id",
+                            "FROM choices c " +
+                            "WHERE c.dialog_id = ? " +
+                            "ORDER BY c.id",
                     new String[]{String.valueOf(dialogId)}
             );
 
             if (cursor.moveToFirst()) {
                 do {
-                    Choice choice = new Choice(
-                            cursor.getInt(cursor.getColumnIndexOrThrow("id")),
-                            cursor.getInt(cursor.getColumnIndexOrThrow("dialog_id")),
-                            cursor.getString(cursor.getColumnIndexOrThrow("choice_text")),
-                            cursor.getInt(cursor.getColumnIndexOrThrow("next_dialog_id"))
-                    );
-                    choices.add(choice);
+                    try {
+                        // Validate that the next dialog exists
+                        int nextDialogId = cursor.getInt(cursor.getColumnIndexOrThrow("next_dialog_id"));
+                        if (isValidDialog(nextDialogId)) {
+                            Choice choice = new Choice(
+                                    cursor.getInt(cursor.getColumnIndexOrThrow("id")),
+                                    cursor.getInt(cursor.getColumnIndexOrThrow("dialog_id")),
+                                    cursor.getString(cursor.getColumnIndexOrThrow("choice_text")),
+                                    nextDialogId
+                            );
+                            choices.add(choice);
+                        } else {
+                            Log.w(TAG, "Skipping choice with invalid next_dialog_id: " + nextDialogId);
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error processing choice row", e);
+                        // Continue with other choices
+                    }
                 } while (cursor.moveToNext());
             }
-            logDatabaseOperation("getChoicesForDialog", "Found " + choices.size() + " choices");
+            logDatabaseOperation("getChoicesForDialog", "Found " + choices.size() + " valid choices");
             return choices;
         } catch (Exception e) {
             logDatabaseError("getChoicesForDialog", e);
-            throw new RuntimeException("Failed to get choices for dialog", e);
+            return choices; // Return empty list instead of throwing exception
         } finally {
             if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
@@ -741,29 +908,62 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public int getUserDialogId(int userId) {
+    private boolean isValidDialog(int dialogId) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = null;
         try {
+            cursor = db.rawQuery("SELECT 1 FROM dialogs WHERE id = ? LIMIT 1",
+                    new String[]{String.valueOf(dialogId)});
+            return cursor.moveToFirst();
+        } catch (Exception e) {
+            Log.e(TAG, "Error validating dialog " + dialogId, e);
+            return false;
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
+    public int getUserDialogId(int userId) {
+        SQLiteDatabase db = null;
+        Cursor cursor = null;
+        try {
+            db = this.getReadableDatabase();
             cursor = db.rawQuery(
                     "SELECT current_dialog_id FROM progress WHERE user_id = ?",
                     new String[]{String.valueOf(userId)}
             );
 
-            if (cursor.moveToFirst()) {
-                return cursor.getInt(0);
+            if (cursor != null && cursor.moveToFirst()) {
+                int dialogId = cursor.getInt(0);
+                Log.d(TAG, "Found dialog ID " + dialogId + " for user " + userId);
+                return dialogId;
             }
 
             // If no progress found, initialize it
-            ContentValues values = new ContentValues();
-            values.put("user_id", userId);
-            values.put("current_dialog_id", 1);
-            db.insert("progress", null, values);
-
+            Log.d(TAG, "No progress found for user " + userId + ", initializing");
+            try {
+                ContentValues values = new ContentValues();
+                values.put("user_id", userId);
+                values.put("current_dialog_id", 1);
+                values.put("last_updated", System.currentTimeMillis());
+                db.insert("progress", null, values);
+                return 1;
+            } catch (Exception e) {
+                Log.e(TAG, "Error creating progress for user " + userId, e);
+                return 1; // Default starting point
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error getting user dialog ID for user " + userId, e);
             return 1; // Default starting point
         } finally {
             if (cursor != null) {
-                cursor.close();
+                try {
+                    cursor.close();
+                } catch (Exception e) {
+                    Log.e(TAG, "Error closing cursor", e);
+                }
             }
         }
     }
@@ -956,66 +1156,54 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.beginTransaction();
         try {
-            // Check if we have all required dialogs
-            Cursor dialogCheck = db.rawQuery(
-                "WITH required_ids AS (" +
-                "  SELECT 1 as id UNION SELECT 11 UNION SELECT 12 UNION SELECT 13 UNION SELECT 14 UNION SELECT 15 " +
-                "  UNION SELECT 111 UNION SELECT 112 UNION SELECT 113 UNION SELECT 121 UNION SELECT 122 UNION SELECT 123 " +
-                "  UNION SELECT 131 UNION SELECT 132 UNION SELECT 133 UNION SELECT 141 UNION SELECT 142 UNION SELECT 143 " +
-                "  UNION SELECT 151 UNION SELECT 152 UNION SELECT 153 UNION SELECT 301 UNION SELECT 302 " +
-                "  UNION SELECT 401 UNION SELECT 402 UNION SELECT 403 UNION SELECT 404 " +
-                "  UNION SELECT 501 UNION SELECT 502 UNION SELECT 503 UNION SELECT 504" +
-                ") " +
-                "SELECT r.id FROM required_ids r LEFT JOIN dialogs d ON r.id = d.id " +
-                "WHERE d.id IS NULL",
-                null
-            );
-
-            boolean needsRepair = dialogCheck.moveToFirst();
+            // Check if we have any dialogs at all
+            Cursor dialogCheck = db.rawQuery("SELECT COUNT(*) FROM dialogs", null);
+            dialogCheck.moveToFirst();
+            int dialogCount = dialogCheck.getInt(0);
             dialogCheck.close();
 
-            if (needsRepair) {
-                Log.w(TAG, "Missing dialogs detected. Attempting to repair...");
-                
-                // Clear existing data
-                db.execSQL("DELETE FROM choices");
-                db.execSQL("DELETE FROM dialogs");
-                
-                // Reset sequences
-                db.execSQL("DELETE FROM sqlite_sequence WHERE name='dialogs' OR name='choices'");
-                
-                // First execute only dialog inserts from seed_story.sql
-                if (applicationContext != null) {
-                    try {
-                        // First pass: Insert dialogs
-                        executeSqlStatementsFromFile(db, applicationContext, "seed_story.sql", true);
-                        
-                        // Second pass: Insert choices
-                        executeSqlStatementsFromFile(db, applicationContext, "seed_story.sql", false);
-                        
-                        Log.d(TAG, "Story data reseeded successfully");
-                    } catch (IOException e) {
-                        Log.e(TAG, "Error reading seed_story.sql", e);
-                        throw new RuntimeException("Failed to read story data", e);
-                    }
-                } else {
-                    throw new RuntimeException("ApplicationContext is null during story data repair");
+            if (dialogCount == 0) {
+                Log.w(TAG, "No dialogs found. Creating emergency story.");
+                FallbackStoryCreator.createEmergencyStory(db);
+                db.setTransactionSuccessful();
+                return;
+            }
+
+            // Check if dialog 1 exists (required starting point)
+            Cursor startCheck = db.rawQuery("SELECT 1 FROM dialogs WHERE id = 1", null);
+            boolean hasStartDialog = startCheck.moveToFirst();
+            startCheck.close();
+
+            if (!hasStartDialog) {
+                Log.w(TAG, "Starting dialog (id=1) missing. Creating fallback start.");
+                try {
+                    db.execSQL("INSERT INTO dialogs (id, text, created_at) VALUES (1, ?, ?)",
+                            new Object[]{
+                                    "Welcome! The story begins here.\n\nThis dialog was created to ensure the game can start properly.",
+                                    System.currentTimeMillis()
+                            });
+                } catch (Exception e) {
+                    Log.e(TAG, "Failed to create starting dialog", e);
                 }
             }
 
-            // Verify choices point to valid dialogs
+            // Verify choices point to valid dialogs and clean up invalid ones
             Cursor choiceCheck = db.rawQuery(
-                "SELECT c.id, c.dialog_id, c.next_dialog_id " +
-                "FROM choices c " +
-                "LEFT JOIN dialogs d1 ON c.dialog_id = d1.id " +
-                "LEFT JOIN dialogs d2 ON c.next_dialog_id = d2.id " +
-                "WHERE d1.id IS NULL OR d2.id IS NULL",
-                null
+                    "SELECT c.id, c.dialog_id, c.next_dialog_id " +
+                            "FROM choices c " +
+                            "LEFT JOIN dialogs d1 ON c.dialog_id = d1.id " +
+                            "LEFT JOIN dialogs d2 ON c.next_dialog_id = d2.id " +
+                            "WHERE d1.id IS NULL OR d2.id IS NULL",
+                    null
             );
 
             if (choiceCheck.moveToFirst()) {
                 Log.w(TAG, "Invalid choice references detected. Cleaning up...");
-                db.execSQL("DELETE FROM choices WHERE dialog_id NOT IN (SELECT id FROM dialogs) OR next_dialog_id NOT IN (SELECT id FROM dialogs)");
+                do {
+                    int choiceId = choiceCheck.getInt(choiceCheck.getColumnIndexOrThrow("id"));
+                    Log.d(TAG, "Removing invalid choice: " + choiceId);
+                    db.execSQL("DELETE FROM choices WHERE id = ?", new String[]{String.valueOf(choiceId)});
+                } while (choiceCheck.moveToNext());
             }
             choiceCheck.close();
 
@@ -1023,7 +1211,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Log.d(TAG, "Story data verification and repair completed");
         } catch (Exception e) {
             Log.e(TAG, "Error during story data verification", e);
-            throw new RuntimeException("Failed to verify story data", e);
+            // Don't throw exception - try to continue with whatever data we have
         } finally {
             db.endTransaction();
         }

@@ -2,4 +2,44 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Primary theme colors -->
+    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryVariant">#3700B3</color>
+    <color name="colorOnPrimary">#FFFFFF</color>
+    <color name="colorSecondary">#03DAC6</color>
+    <color name="colorSecondaryVariant">#018786</color>
+    <color name="colorOnSecondary">#000000</color>
+
+    <!-- Background colors -->
+    <color name="colorBackground">#FFFFFF</color>
+    <color name="colorSurface">#FFFFFF</color>
+    <color name="colorOnBackground">#000000</color>
+    <color name="colorOnSurface">#000000</color>
+
+    <!-- Enhanced dialog colors -->
+    <color name="dialog_background">#F8F9FA</color>
+    <color name="dialog_text">#2C3E50</color>
+    <color name="character_speech">#34495E</color>
+    <color name="narrative_text">#555555</color>
+
+    <!-- Character-specific colors -->
+    <color name="viren_accent">#8E44AD</color>
+    <color name="selene_accent">#E74C3C</color>
+    <color name="elira_accent">#3498DB</color>
+    <color name="maskbearer_accent">#95A5A6</color>
+
+    <!-- UI enhancement colors -->
+    <color name="choice_background">#2C3E50</color>
+    <color name="choice_background_pressed">#34495E</color>
+    <color name="loading_background">#FFFFFF</color>
+    <color name="shadow_color">#40000000</color>
+
+    <!-- Additional utility colors -->
+    <color name="transparent">#00000000</color>
+    <color name="semi_transparent_black">#80000000</color>
+    <color name="semi_transparent_white">#80FFFFFF</color>
+    <color name="light_gray">#F5F5F5</color>
+    <color name="medium_gray">#CCCCCC</color>
+    <color name="dark_gray">#666666</color>
 </resources>
