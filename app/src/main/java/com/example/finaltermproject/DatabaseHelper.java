@@ -567,6 +567,154 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 choice34_1.put("created_at", currentTime);
                 db.insert("choices", null, choice34_1);
 
+                // Add pre-ending dialogs
+                ContentValues dialog301 = new ContentValues();
+                dialog301.put("id", 301);
+                dialog301.put("text", "The city is in chaos. Your actions have led to this moment of crisis.");
+                dialog301.put("created_at", currentTime);
+                db.insert("dialogs", null, dialog301);
+
+                ContentValues dialog302 = new ContentValues();
+                dialog302.put("id", 302);
+                dialog302.put("text", "Time itself bends around you. Multiple realities converge at this point.");
+                dialog302.put("created_at", currentTime);
+                db.insert("dialogs", null, dialog302);
+
+                ContentValues dialog401 = new ContentValues();
+                dialog401.put("id", 401);
+                dialog401.put("text", "With newfound power, you must decide how to shape justice in this world.");
+                dialog401.put("created_at", currentTime);
+                db.insert("dialogs", null, dialog401);
+
+                ContentValues dialog402 = new ContentValues();
+                dialog402.put("id", 402);
+                dialog402.put("text", "The boundaries between worlds grow thin. Your choice will determine their fate.");
+                dialog402.put("created_at", currentTime);
+                db.insert("dialogs", null, dialog402);
+
+                ContentValues dialog403 = new ContentValues();
+                dialog403.put("id", 403);
+                dialog403.put("text", "Reality itself awaits your decision. The power to reshape existence lies in your hands.");
+                dialog403.put("created_at", currentTime);
+                db.insert("dialogs", null, dialog403);
+
+                ContentValues dialog404 = new ContentValues();
+                dialog404.put("id", 404);
+                dialog404.put("text", "Time fragments spread before you like a shattered mirror. Each shard shows a different path.");
+                dialog404.put("created_at", currentTime);
+                db.insert("dialogs", null, dialog404);
+
+                // Add ending dialogs
+                ContentValues dialog501 = new ContentValues();
+                dialog501.put("id", 501);
+                dialog501.put("text", "**Ending 1: The Sovereign of Rain**\n\nYou have become the Sovereign of Rain, a being of immense power and responsibility. The world bows to your justice, and the waters of change flow according to your will.");
+                dialog501.put("created_at", currentTime);
+                db.insert("dialogs", null, dialog501);
+
+                ContentValues dialog502 = new ContentValues();
+                dialog502.put("id", 502);
+                dialog502.put("text", "**Ending 2: The Hidden Verse**\n\nYou have discovered the Hidden Verse, a secret truth that changes everything. Your knowledge reshapes the world in subtle but profound ways.");
+                dialog502.put("created_at", currentTime);
+                db.insert("dialogs", null, dialog502);
+
+                ContentValues dialog503 = new ContentValues();
+                dialog503.put("id", 503);
+                dialog503.put("text", "**Ending 3: Judgment Broken**\n\nThe old order has crumbled. In breaking the chains of judgment, you have set both justice and chaos free. The world must now find its own balance.");
+                dialog503.put("created_at", currentTime);
+                db.insert("dialogs", null, dialog503);
+
+                ContentValues dialog504 = new ContentValues();
+                dialog504.put("id", 504);
+                dialog504.put("text", "**Ending 4: Floodlight Reborn**\n\nThrough the waters of change, you emerge transformed. The light of truth shines anew, and with it, hope for a different future.");
+                dialog504.put("created_at", currentTime);
+                db.insert("dialogs", null, dialog504);
+
+                // Add choices for pre-ending dialogs
+                ContentValues choice301_1 = new ContentValues();
+                choice301_1.put("dialog_id", 301);
+                choice301_1.put("choice_text", "Take control and calm the people");
+                choice301_1.put("next_dialog_id", 401);
+                choice301_1.put("created_at", currentTime);
+                db.insert("choices", null, choice301_1);
+
+                ContentValues choice301_2 = new ContentValues();
+                choice301_2.put("dialog_id", 301);
+                choice301_2.put("choice_text", "Let the chaos run its course");
+                choice301_2.put("next_dialog_id", 402);
+                choice301_2.put("created_at", currentTime);
+                db.insert("choices", null, choice301_2);
+
+                ContentValues choice302_1 = new ContentValues();
+                choice302_1.put("dialog_id", 302);
+                choice302_1.put("choice_text", "Rewrite the current cycle");
+                choice302_1.put("next_dialog_id", 403);
+                choice302_1.put("created_at", currentTime);
+                db.insert("choices", null, choice302_1);
+
+                ContentValues choice302_2 = new ContentValues();
+                choice302_2.put("dialog_id", 302);
+                choice302_2.put("choice_text", "Anchor yourself in one of the past realities");
+                choice302_2.put("next_dialog_id", 404);
+                choice302_2.put("created_at", currentTime);
+                db.insert("choices", null, choice302_2);
+
+                // Add choices for final decision dialogs
+                ContentValues choice401_1 = new ContentValues();
+                choice401_1.put("dialog_id", 401);
+                choice401_1.put("choice_text", "Spread this new justice across the world");
+                choice401_1.put("next_dialog_id", 501);
+                choice401_1.put("created_at", currentTime);
+                db.insert("choices", null, choice401_1);
+
+                ContentValues choice401_2 = new ContentValues();
+                choice401_2.put("dialog_id", 401);
+                choice401_2.put("choice_text", "Keep it local, protecting Caelondria");
+                choice401_2.put("next_dialog_id", 502);
+                choice401_2.put("created_at", currentTime);
+                db.insert("choices", null, choice401_2);
+
+                ContentValues choice402_1 = new ContentValues();
+                choice402_1.put("dialog_id", 402);
+                choice402_1.put("choice_text", "Let the worlds merge into one");
+                choice402_1.put("next_dialog_id", 503);
+                choice402_1.put("created_at", currentTime);
+                db.insert("choices", null, choice402_1);
+
+                ContentValues choice402_2 = new ContentValues();
+                choice402_2.put("dialog_id", 402);
+                choice402_2.put("choice_text", "Sever the link and accept your rewritten truth");
+                choice402_2.put("next_dialog_id", 504);
+                choice402_2.put("created_at", currentTime);
+                db.insert("choices", null, choice402_2);
+
+                ContentValues choice403_1 = new ContentValues();
+                choice403_1.put("dialog_id", 403);
+                choice403_1.put("choice_text", "Create a perfect world");
+                choice403_1.put("next_dialog_id", 501);
+                choice403_1.put("created_at", currentTime);
+                db.insert("choices", null, choice403_1);
+
+                ContentValues choice403_2 = new ContentValues();
+                choice403_2.put("dialog_id", 403);
+                choice403_2.put("choice_text", "Preserve the imperfect truth");
+                choice403_2.put("next_dialog_id", 502);
+                choice403_2.put("created_at", currentTime);
+                db.insert("choices", null, choice403_2);
+
+                ContentValues choice404_1 = new ContentValues();
+                choice404_1.put("dialog_id", 404);
+                choice404_1.put("choice_text", "Return to your original time");
+                choice404_1.put("next_dialog_id", 503);
+                choice404_1.put("created_at", currentTime);
+                db.insert("choices", null, choice404_1);
+
+                ContentValues choice404_2 = new ContentValues();
+                choice404_2.put("dialog_id", 404);
+                choice404_2.put("choice_text", "Stay in the chosen past");
+                choice404_2.put("next_dialog_id", 504);
+                choice404_2.put("created_at", currentTime);
+                db.insert("choices", null, choice404_2);
+
                 // Add choices for ending 501 (Sovereign of Rain)
                 ContentValues choice501_1 = new ContentValues();
                 choice501_1.put("dialog_id", 501);
@@ -627,6 +775,115 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 choice504_2.put("created_at", currentTime);
                 db.insert("choices", null, choice504_2);
 
+                // Add "Back to Menu" choices for each ending
+                ContentValues choice501_3 = new ContentValues();
+                choice501_3.put("dialog_id", 501);
+                choice501_3.put("choice_text", "Back to Menu");
+                choice501_3.put("next_dialog_id", 1);
+                choice501_3.put("created_at", currentTime);
+                db.insert("choices", null, choice501_3);
+
+                ContentValues choice502_3 = new ContentValues();
+                choice502_3.put("dialog_id", 502);
+                choice502_3.put("choice_text", "Back to Menu");
+                choice502_3.put("next_dialog_id", 1);
+                choice502_3.put("created_at", currentTime);
+                db.insert("choices", null, choice502_3);
+
+                ContentValues choice503_3 = new ContentValues();
+                choice503_3.put("dialog_id", 503);
+                choice503_3.put("choice_text", "Back to Menu");
+                choice503_3.put("next_dialog_id", 1);
+                choice503_3.put("created_at", currentTime);
+                db.insert("choices", null, choice503_3);
+
+                ContentValues choice504_3 = new ContentValues();
+                choice504_3.put("dialog_id", 504);
+                choice504_3.put("choice_text", "Back to Menu");
+                choice504_3.put("next_dialog_id", 1);
+                choice504_3.put("created_at", currentTime);
+                db.insert("choices", null, choice504_3);
+
+                // Add missing choices
+                ContentValues choice123 = new ContentValues();
+                choice123.put("dialog_id", 23);
+                choice123.put("choice_text", "Investigate the elemental convergence");
+                choice123.put("next_dialog_id", 32);
+                choice123.put("created_at", currentTime);
+                db.insert("choices", null, choice123);
+
+                ContentValues choice143 = new ContentValues();
+                choice143.put("dialog_id", 28);
+                choice143.put("choice_text", "Study the ancient maritime legends");
+                choice143.put("next_dialog_id", 32);
+                choice143.put("created_at", currentTime);
+                db.insert("choices", null, choice143);
+
+                ContentValues choice141 = new ContentValues();
+                choice141.put("dialog_id", 26);
+                choice141.put("choice_text", "Explore the deeper mysteries of the temple");
+                choice141.put("next_dialog_id", 32);
+                choice141.put("created_at", currentTime);
+                db.insert("choices", null, choice141);
+
+                ContentValues choice142 = new ContentValues();
+                choice142.put("dialog_id", 27);
+                choice142.put("choice_text", "Examine the crystal resonance patterns");
+                choice142.put("next_dialog_id", 32);
+                choice142.put("created_at", currentTime);
+                db.insert("choices", null, choice142);
+
+                ContentValues choice151 = new ContentValues();
+                choice151.put("dialog_id", 29);
+                choice151.put("choice_text", "Delve into Lady Selene's past");
+                choice151.put("next_dialog_id", 32);
+                choice151.put("created_at", currentTime);
+                db.insert("choices", null, choice151);
+
+                ContentValues choice152 = new ContentValues();
+                choice152.put("dialog_id", 30);
+                choice152.put("choice_text", "Follow the threads of deception");
+                choice152.put("next_dialog_id", 32);
+                choice152.put("created_at", currentTime);
+                db.insert("choices", null, choice152);
+
+                ContentValues choice153 = new ContentValues();
+                choice153.put("dialog_id", 31);
+                choice153.put("choice_text", "Uncover the truth about Lady Selene's powers");
+                choice153.put("next_dialog_id", 32);
+                choice153.put("created_at", currentTime);
+                db.insert("choices", null, choice153);
+
+                // Add choices 14 and 15
+                ContentValues choice14 = new ContentValues();
+                choice14.put("dialog_id", 14);
+                choice14.put("choice_text", "Research Lady Selene's family history");
+                choice14.put("next_dialog_id", 29);
+                choice14.put("created_at", currentTime);
+                db.insert("choices", null, choice14);
+
+                ContentValues choice15 = new ContentValues();
+                choice15.put("dialog_id", 15);
+                choice15.put("choice_text", "Follow the evidence trail");
+                choice15.put("next_dialog_id", 30);
+                choice15.put("created_at", currentTime);
+                db.insert("choices", null, choice15);
+
+                // Add two additional choices for dialog_id 1
+                ContentValues choice1_4 = new ContentValues();
+                choice1_4.put("dialog_id", 1);
+                choice1_4.put("choice_text", "Visit the ancient library to research the realm's history");
+                choice1_4.put("next_dialog_id", 11);
+                choice1_4.put("created_at", currentTime);
+                db.insert("choices", null, choice1_4);
+
+                ContentValues choice1_5 = new ContentValues();
+                choice1_5.put("dialog_id", 1);
+                choice1_5.put("choice_text", "Seek out the mysterious Oracle of the Tides");
+                choice1_5.put("next_dialog_id", 12);
+                choice1_5.put("created_at", currentTime);
+                db.insert("choices", null, choice1_5);
+
                 // Verify data insertion
                 Cursor dialogCursor = db.rawQuery("SELECT COUNT(*) FROM dialogs", null);
                 dialogCursor.moveToFirst();
@@ -654,20 +911,162 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 dialog13Choices.close();
                 Log.d(TAG, "Choices for dialog 13: " + dialog13ChoiceCount);
 
+                // Add new choices for dialog 11
+                ContentValues dialog11_1 = new ContentValues();
+                dialog11_1.put("dialog_id", 11);
+                dialog11_1.put("choice_text", "Confront the Scale itself by requesting an Audience of Judgment");
+                dialog11_1.put("next_dialog_id", 111);
+                dialog11_1.put("created_at", currentTime);
+                db.insert("choices", null, dialog11_1);
+
+                ContentValues dialog11_2 = new ContentValues();
+                dialog11_2.put("dialog_id", 11);
+                dialog11_2.put("choice_text", "Seek the Lustrines for their memory of Caelondria before the courts");
+                dialog11_2.put("next_dialog_id", 112);
+                dialog11_2.put("created_at", currentTime);
+                db.insert("choices", null, dialog11_2);
+
+                ContentValues dialog11_3 = new ContentValues();
+                dialog11_3.put("dialog_id", 11);
+                dialog11_3.put("choice_text", "Attempt to modify the prophecy secretly");
+                dialog11_3.put("next_dialog_id", 113);
+                dialog11_3.put("created_at", currentTime);
+                db.insert("choices", null, dialog11_3);
+
+                ContentValues dialog12_1 = new ContentValues();
+                dialog12_1.put("dialog_id", 12);
+                dialog12_1.put("choice_text", "Dive deeper, risking your breath, to find the source");
+                dialog12_1.put("next_dialog_id", 121);
+                dialog12_1.put("created_at", currentTime);
+                db.insert("choices", null, dialog12_1);
+
+                ContentValues dialog12_2 = new ContentValues();
+                dialog12_2.put("dialog_id", 12);
+                dialog12_2.put("choice_text", "Capture and analyze the harmonic energy in the water");
+                dialog12_2.put("next_dialog_id", 122);
+                dialog12_2.put("created_at", currentTime);
+                db.insert("choices", null, dialog12_2);
+
+                // Add the corresponding dialog entries
+                ContentValues dialog111 = new ContentValues();
+                dialog111.put("id", 111);
+                dialog111.put("text", "You stand before the Scale of Justice, its ancient presence weighing heavily upon you.");
+                dialog111.put("created_at", currentTime);
+                db.insert("dialogs", null, dialog111);
+
+                ContentValues dialog112 = new ContentValues();
+                dialog112.put("id", 112);
+                dialog112.put("text", "The Lustrines welcome you to their hidden archives, where memories of old Caelondria still live.");
+                dialog112.put("created_at", currentTime);
+                db.insert("dialogs", null, dialog112);
+
+                ContentValues dialog113 = new ContentValues();
+                dialog113.put("id", 113);
+                dialog113.put("text", "In the shadows of the prophecy chamber, you begin your dangerous work of alteration.");
+                dialog113.put("created_at", currentTime);
+                db.insert("dialogs", null, dialog113);
+
+                ContentValues dialog121 = new ContentValues();
+                dialog121.put("id", 121);
+                dialog121.put("text", "The depths reveal an ancient underwater temple, its walls inscribed with glowing symbols.");
+                dialog121.put("created_at", currentTime);
+                db.insert("dialogs", null, dialog121);
+
+                ContentValues dialog122 = new ContentValues();
+                dialog122.put("id", 122);
+                dialog122.put("text", "The water's energy pulses with a strange rhythm, each wave carrying fragments of an ancient song.");
+                dialog122.put("created_at", currentTime);
+                db.insert("dialogs", null, dialog122);
+
+                // Add choices for dialog 111
+                ContentValues choice111_1 = new ContentValues();
+                choice111_1.put("dialog_id", 111);
+                choice111_1.put("choice_text", "Demand the Scale justify its prophecy");
+                choice111_1.put("next_dialog_id", 301);
+                choice111_1.put("created_at", currentTime);
+                db.insert("choices", null, choice111_1);
+
+                ContentValues choice111_2 = new ContentValues();
+                choice111_2.put("dialog_id", 111);
+                choice111_2.put("choice_text", "Ask the Scale to show you the truth");
+                choice111_2.put("next_dialog_id", 302);
+                choice111_2.put("created_at", currentTime);
+                db.insert("choices", null, choice111_2);
+
+                // Add choices for dialog 112
+                ContentValues choice112_1 = new ContentValues();
+                choice112_1.put("dialog_id", 112);
+                choice112_1.put("choice_text", "Learn the original laws of the land");
+                choice112_1.put("next_dialog_id", 301);
+                choice112_1.put("created_at", currentTime);
+                db.insert("choices", null, choice112_1);
+
+                ContentValues choice112_2 = new ContentValues();
+                choice112_2.put("dialog_id", 112);
+                choice112_2.put("choice_text", "Witness the Scale's first judgment");
+                choice112_2.put("next_dialog_id", 302);
+                choice112_2.put("created_at", currentTime);
+                db.insert("choices", null, choice112_2);
+
+                // Add choices for dialog 113
+                ContentValues choice113_1 = new ContentValues();
+                choice113_1.put("dialog_id", 113);
+                choice113_1.put("choice_text", "Force the change despite the pain");
+                choice113_1.put("next_dialog_id", 301);
+                choice113_1.put("created_at", currentTime);
+                db.insert("choices", null, choice113_1);
+
+                ContentValues choice113_2 = new ContentValues();
+                choice113_2.put("dialog_id", 113);
+                choice113_2.put("choice_text", "Retreat and seek another way");
+                choice113_2.put("next_dialog_id", 302);
+                choice113_2.put("created_at", currentTime);
+                db.insert("choices", null, choice113_2);
+
+                // Add choices for dialog 121
+                ContentValues choice121_1 = new ContentValues();
+                choice121_1.put("dialog_id", 121);
+                choice121_1.put("choice_text", "Enter the temple");
+                choice121_1.put("next_dialog_id", 301);
+                choice121_1.put("created_at", currentTime);
+                db.insert("choices", null, choice121_1);
+
+                ContentValues choice121_2 = new ContentValues();
+                choice121_2.put("dialog_id", 121);
+                choice121_2.put("choice_text", "Surface and bring others");
+                choice121_2.put("next_dialog_id", 302);
+                choice121_2.put("created_at", currentTime);
+                db.insert("choices", null, choice121_2);
+
+                // Add choices for dialog 122
+                ContentValues choice122_1 = new ContentValues();
+                choice122_1.put("dialog_id", 122);
+                choice122_1.put("choice_text", "Disrupt the rhythm");
+                choice122_1.put("next_dialog_id", 301);
+                choice122_1.put("created_at", currentTime);
+                db.insert("choices", null, choice122_1);
+
+                ContentValues choice122_2 = new ContentValues();
+                choice122_2.put("dialog_id", 122);
+                choice122_2.put("choice_text", "Follow the pattern to its source");
+                choice122_2.put("next_dialog_id", 302);
+                choice122_2.put("created_at", currentTime);
+                db.insert("choices", null, choice122_2);
+
             } catch (Exception e) {
                 Log.e(TAG, "Error creating initial data: " + e.getMessage(), e);
                 throw e;
             }
 
-            db.setTransactionSuccessful();
+                db.setTransactionSuccessful();
             Log.d(TAG, "Database creation completed successfully");
-        } catch (Exception e) {
+            } catch (Exception e) {
             Log.e(TAG, "Error creating database: " + e.getMessage(), e);
             throw new RuntimeException("Database creation failed", e);
-        } finally {
-            db.endTransaction();
+            } finally {
+                db.endTransaction();
+            }
         }
-    }
 
     private void validateAndRepairAfterLoad(SQLiteDatabase db) {
         try {
@@ -697,8 +1096,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        @Override
+        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Log.d(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion);
 
         db.beginTransaction();
@@ -742,9 +1141,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.d(TAG, "Upgrading to database version 2");
         try {
             // Add timestamp columns to tables with default value 0
-            for (String upgrade : VERSION_2_UPGRADES) {
-                db.execSQL(upgrade);
-            }
+                for (String upgrade : VERSION_2_UPGRADES) {
+                    db.execSQL(upgrade);
+                }
 
             // Update existing records with current timestamp
             long currentTime = System.currentTimeMillis();
@@ -763,9 +1162,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.d(TAG, "Upgrading to database version 3");
         try {
             // Add new indexes
-            for (String upgrade : VERSION_3_UPGRADES) {
-                db.execSQL(upgrade);
-            }
+                for (String upgrade : VERSION_3_UPGRADES) {
+                    db.execSQL(upgrade);
+                }
 
             Log.d(TAG, "Version 3 upgrade completed successfully");
         } catch (Exception e) {
@@ -1038,7 +1437,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 values.put("user_id", userId);
                 db.insertOrThrow("progress", null, values);
                 logDatabaseOperation("updateUserProgress", "Created new progress record");
-            } else {
+                } else {
                 logDatabaseOperation("updateUserProgress", "Updated existing progress record");
             }
 
@@ -1144,7 +1543,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
 
             StringBuilder currentStatement = new StringBuilder();
-            String line;
+                    String line;
             boolean inStatement = false;
             int parenthesesCount = 0;
 
@@ -1194,11 +1593,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             if (!hasMinimumStoryData(db)) {
                 Log.w(TAG, "Minimum story data not found after script execution, creating fallback");
                 createFallbackStoryData(db);
-            } else {
+                } else {
                 Log.d(TAG, "SQL script execution completed successfully. Executed " + statementCount + " statements.");
-            }
+                }
 
-        } catch (IOException e) {
+            } catch (IOException e) {
             Log.e(TAG, "Error reading SQL script: " + filename, e);
             createFallbackStoryData(db);
         } catch (Exception e) {
@@ -1528,7 +1927,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 return currentExists && nextExists;
             }
             return false;
-        } finally {
+            } finally {
             if (cursor != null) {
                 cursor.close();
             }
@@ -1772,10 +2171,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 // Use try-with-resources for compression
                 try (FileInputStream fis = new FileInputStream(currentDB);
                      GZIPOutputStream gzos = new GZIPOutputStream(new FileOutputStream(backupDB))) {
-                    
-                    byte[] buffer = new byte[1024];
-                    int length;
-                    while ((length = fis.read(buffer)) > 0) {
+
+                byte[] buffer = new byte[1024];
+                int length;
+                while ((length = fis.read(buffer)) > 0) {
                         gzos.write(buffer, 0, length);
                     }
                     gzos.finish();
@@ -1843,11 +2242,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             // Decompress backup
             try (GZIPInputStream gzis = new GZIPInputStream(new FileInputStream(backupFile));
                  FileOutputStream fos = new FileOutputStream(tempFile)) {
-                
-                byte[] buffer = new byte[1024];
-                int length;
+
+                    byte[] buffer = new byte[1024];
+                    int length;
                 while ((length = gzis.read(buffer)) > 0) {
-                    fos.write(buffer, 0, length);
+                        fos.write(buffer, 0, length);
                 }
             }
 
@@ -2013,7 +2412,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                         Log.d(TAG, "Executing SQL: " + individualSql);
                                         db.execSQL(individualSql);
                                     }
-                                } else {
+                } else {
                                     Log.d(TAG, "Executing SQL: " + sql);
                                     db.execSQL(sql);
                                 }
@@ -2040,7 +2439,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             if (reader != null) {
                 try {
                     reader.close();
-                } catch (IOException e) {
+            } catch (IOException e) {
                     Log.e(TAG, "Error closing reader", e);
                 }
             }
