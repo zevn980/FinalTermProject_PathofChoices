@@ -1,5 +1,7 @@
 package com.example.finaltermproject;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.media.MediaPlayer;
 import android.media.AudioManager;
 import android.media.AudioAttributes;
@@ -433,37 +435,39 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void loadDialog(int dialogId) {
+        Log.d(TAG, "Loading dialog: " + dialogId);
         showLoading(true);
+        isChoiceClickable = true;
 
-        // Use a background thread for database operations
         new Thread(() -> {
             try {
                 DialogEntry dialog = db.getDialogById(dialogId);
                 List<Choice> choices = db.getChoicesForDialog(dialogId);
 
-                // Update UI on main thread
-                runOnUiThread(() -> {
-                    try {
-                        if (dialog == null) {
-                            handleDialogNotFound(dialogId);
-                        } else if (isEndingDialog(dialog.getId())) {
+                // Check if activity is still valid before UI update
+                if (!isFinishing() && !isDestroyed()) {
+                    runOnUiThread(() -> {
+                        try {
+                            showLoading(false);
+                            if (dialog == null) {
+                                handleDialogNotFound(dialogId);
+                                return;
+                            }
                             updateDialogUI(dialog, choices);
-                        } else {
-                            updateDialogUI(dialog, choices);
+                        } catch (Exception e) {
+                            Log.e(TAG, "Error updating UI with dialog", e);
+                            handleLoadError(dialogId, e);
                         }
-                    } catch (Exception e) {
-                        Log.e(TAG, "Error updating UI with dialog", e);
-                        handleLoadError(dialogId, e);
-                    } finally {
-                        showLoading(false);
-                    }
-                });
+                    });
+                }
             } catch (Exception e) {
                 Log.e(TAG, "Error loading dialog from database", e);
-                runOnUiThread(() -> {
-                    handleLoadError(dialogId, e);
-                    showLoading(false);
-                });
+                if (!isFinishing() && !isDestroyed()) {
+                    runOnUiThread(() -> {
+                        showLoading(false);
+                        handleLoadError(dialogId, e);
+                    });
+                }
             }
         }).start();
     }
@@ -471,41 +475,65 @@ public class GameActivity extends AppCompatActivity {
     private void updateDialogUI(DialogEntry dialog, List<Choice> choices) {
         String formattedText = formatDialogText(dialog.getText());
 
-        // Check if this is an ending dialog (dialogs 501-504)
+        // Check if this is an ending dialog
         boolean isEnding = isEndingDialog(dialog.getId());
 
-        // Detect and display character
-        String characterName = detectCharacterInDialog(dialog.getText());
-        if (characterName != null && !isEnding) {
-            currentCharacter = characterName;
-            showCharacterImage(characterName);
-        } else {
-            // Hide character for endings or when no character detected
-            if (currentCharacter != null && (!hasOngoingCharacterDialog() || isEnding)) {
-                hideCharacterImage();
-                currentCharacter = null;
-            }
-        }
+        // Handle character display
+        handleCharacterDisplay(dialog.getText(), isEnding);
 
-        // Animate text change
-        textDialog.animate()
-                .alpha(0f)
-                .setDuration(150)
-                .withEndAction(() -> {
-                    textDialog.setText(createFormattedSpannable(formattedText));
-                    textDialog.animate()
-                            .alpha(1f)
-                            .setDuration(400)
-                            .setInterpolator(new DecelerateInterpolator())
-                            .start();
-                }).start();
+        // Update dialog text with smooth transition
+        updateDialogText(formattedText);
 
-        // Show choices or ending button
+        // Show choices or ending
         if (isEnding) {
             showEndingWithBackButton();
         } else {
             showChoices(choices);
         }
+    }
+
+    private void handleCharacterDisplay(String dialogText, boolean isEnding) {
+        String detectedCharacter = detectCharacterInDialog(dialogText);
+
+        if (isEnding) {
+            // Hide character for endings
+            hideCharacterImage();
+            currentCharacter = null;
+        } else if (detectedCharacter != null) {
+            // Show new character or update existing
+            if (!detectedCharacter.equals(currentCharacter)) {
+                currentCharacter = detectedCharacter;
+                showCharacterImage(detectedCharacter);
+            }
+        } else if (currentCharacter != null) {
+            // Check if we should keep showing the current character
+            // Hide only if several dialogs pass without the character
+            // This prevents flickering when character isn't mentioned in every line
+            hideCharacterImageDelayed();
+        }
+    }
+
+    private void hideCharacterImageDelayed() {
+        // Delay hiding to prevent flickering
+        if (handler != null) {
+            handler.postDelayed(this::hideCharacterImage, 1500);
+        }
+    }
+
+    private void updateDialogText(String formattedText) {
+        if (textDialog == null) return;
+
+        // Simple fade transition for text updates
+        textDialog.animate()
+                .alpha(0.3f)
+                .setDuration(150)
+                .withEndAction(() -> {
+                    textDialog.setText(createFormattedSpannable(formattedText));
+                    textDialog.animate()
+                            .alpha(1f)
+                            .setDuration(300)
+                            .start();
+                }).start();
     }
 
     private boolean isEndingDialog(int dialogId) {
@@ -520,67 +548,177 @@ public class GameActivity extends AppCompatActivity {
         handler.postDelayed(() -> addBackToMenuButton(), 2000); // Delay to let players read
     }
 
+    // Replace the formatDialogText method in GameActivity.java
     private String formatDialogText(String rawText) {
-        if (rawText == null) return "";
+        if (rawText == null || rawText.trim().isEmpty()) return "";
 
-        // Break long paragraphs into readable chunks
-        String formatted = rawText
-                // Add breathing room after dialogue
-                .replaceAll("\"([^\"]+)\"", "\"$1\"\n\n")
-                // Break up long narrative sections - be more conservative
-                .replaceAll("\\. ([A-Z][a-z]{3,})", ".\n\n$1")
-                // Format speaker identification
-                .replaceAll("([A-Z][a-z]+ [A-Z][a-z]+),", "\n**$1:**\n")
-                .replaceAll("\"([^\"]+),\"", "\n*\"$1,\"*\n")
-                // Handle existing newlines better
-                .replaceAll("\\\\n", "\n")
-                // Clean up multiple newlines
-                .replaceAll("\n{3,}", "\n\n")
+        // Clean up the raw text
+        String cleaned = rawText
+                .replaceAll("\\\\n", "\n") // Handle explicit line breaks
+                .replaceAll("\\s+", " ")   // Normalize whitespace
                 .trim();
 
-        return formatted;
+        // Split into natural conversation chunks
+        return createNaturalDialogueFlow(cleaned);
     }
+
+    private String createNaturalDialogueFlow(String text) {
+        StringBuilder result = new StringBuilder();
+
+        // Split by existing paragraph breaks first
+        String[] existingParagraphs = text.split("\n\n+");
+
+        for (int i = 0; i < existingParagraphs.length; i++) {
+            String paragraph = existingParagraphs[i].trim();
+            if (paragraph.isEmpty()) continue;
+
+            // Process each paragraph for natural breaks
+            String formattedParagraph = formatSingleParagraph(paragraph);
+            result.append(formattedParagraph);
+
+            // Add spacing between paragraphs
+            if (i < existingParagraphs.length - 1) {
+                result.append("\n\n");
+            }
+        }
+
+        return result.toString();
+    }
+
+    private String formatSingleParagraph(String paragraph) {
+        // Check if paragraph is already short enough
+        if (paragraph.length() <= 150) {
+            return paragraph;
+        }
+
+        // Break long paragraphs at natural points
+        StringBuilder formatted = new StringBuilder();
+        String[] sentences = paragraph.split("(?<=\\.)\\s+(?=[A-Z])");
+
+        int currentLength = 0;
+        boolean needsBreak = false;
+
+        for (int i = 0; i < sentences.length; i++) {
+            String sentence = sentences[i].trim();
+            if (sentence.isEmpty()) continue;
+
+            // Add sentence
+            if (formatted.length() > 0 && !needsBreak) {
+                formatted.append(" ");
+                currentLength++;
+            }
+
+            formatted.append(sentence);
+            currentLength += sentence.length();
+
+            // Determine if we need a break
+            needsBreak = shouldBreakAfterSentence(sentence, currentLength, i, sentences);
+
+            if (needsBreak && i < sentences.length - 1) {
+                formatted.append("\n\n");
+                currentLength = 0;
+                needsBreak = false;
+            }
+        }
+
+        return formatted.toString();
+    }
+
+    private boolean shouldBreakAfterSentence(String sentence, int currentLength, int index, String[] allSentences) {
+        // Break after dialogue
+        if (sentence.contains("\"") && sentence.endsWith("\"")) {
+            return true;
+        }
+
+        // Break after character actions or descriptions
+        if (sentence.matches(".*\\*\\*[^*]+\\*\\*.*")) {
+            return true;
+        }
+
+        // Break if paragraph is getting long (>200 chars)
+        if (currentLength > 200) {
+            return true;
+        }
+
+        // Break before dramatic moments
+        if (index < allSentences.length - 1) {
+            String nextSentence = allSentences[index + 1];
+            if (nextSentence.startsWith("\"") ||
+                    nextSentence.matches("^(Suddenly|Then|But|However|Meanwhile).*") ||
+                    nextSentence.contains("**")) {
+                return true;
+            }
+        }
+
+        // Break after emotional or action beats
+        if (sentence.matches(".*(gasps|whispers|shouts|pauses|sighs|turns|looks|steps).*")) {
+            return true;
+        }
+
+        return false;
+    }
+
+
 
     private SpannableString createFormattedSpannable(String text) {
         SpannableString spannable = new SpannableString(text);
 
         try {
-            // Apply formatting for better readability
+            // Format character names (bold formatting)
+            Pattern characterPattern = Pattern.compile("\\*\\*([^*]+)\\*\\*");
+            Matcher characterMatcher = characterPattern.matcher(text);
+
+            while (characterMatcher.find()) {
+                spannable.setSpan(new StyleSpan(Typeface.BOLD),
+                        characterMatcher.start(), characterMatcher.end(),
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                // Slightly larger text for character names
+                spannable.setSpan(new RelativeSizeSpan(1.1f),
+                        characterMatcher.start(), characterMatcher.end(),
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                try {
+                    int characterColor = ContextCompat.getColor(this, R.color.colorBackground);
+                    spannable.setSpan(new ForegroundColorSpan(characterColor),
+                            characterMatcher.start(), characterMatcher.end(),
+                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                } catch (Exception e) {
+                    // Use default color if custom color not available
+                }
+            }
+
+            // Format dialogue text (italic and different color)
             Pattern dialogPattern = Pattern.compile("\"([^\"]+)\"");
             Matcher dialogMatcher = dialogPattern.matcher(text);
 
             while (dialogMatcher.find()) {
-                // Style dialogue text
                 spannable.setSpan(new StyleSpan(Typeface.ITALIC),
                         dialogMatcher.start(), dialogMatcher.end(),
                         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-                // Use default color if custom color not available
                 try {
                     int dialogColor = ContextCompat.getColor(this, R.color.character_speech);
                     spannable.setSpan(new ForegroundColorSpan(dialogColor),
                             dialogMatcher.start(), dialogMatcher.end(),
                             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 } catch (Exception e) {
-                    // Use default text color if custom color fails
-                    Log.w(TAG, "Custom dialog color not available, using default");
+                    // Use default if custom color not available
                 }
             }
 
-            // Style character names
-            Pattern namePattern = Pattern.compile("\\*\\*([^*]+):\\*\\*");
-            Matcher nameMatcher = namePattern.matcher(text);
+            // Format italicized text (narrative emphasis)
+            Pattern italicPattern = Pattern.compile("\\*([^*]+)\\*");
+            Matcher italicMatcher = italicPattern.matcher(text);
 
-            while (nameMatcher.find()) {
-                spannable.setSpan(new StyleSpan(Typeface.BOLD),
-                        nameMatcher.start(), nameMatcher.end(),
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                spannable.setSpan(new RelativeSizeSpan(1.1f),
-                        nameMatcher.start(), nameMatcher.end(),
+            while (italicMatcher.find()) {
+                spannable.setSpan(new StyleSpan(Typeface.ITALIC),
+                        italicMatcher.start(), italicMatcher.end(),
                         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
+
         } catch (Exception e) {
-            Log.e(TAG, "Error formatting spannable text: " + e.getMessage());
+            Log.e(TAG, "Error formatting spannable text", e);
         }
 
         return spannable;
@@ -589,66 +727,65 @@ public class GameActivity extends AppCompatActivity {
     private String detectCharacterInDialog(String dialogText) {
         if (dialogText == null) return null;
 
-        // Simple character detection - extend this list based on your story
-        String[] characters = {"Viren", "Selene", "Elira", "Maskbearer"};
+        // Enhanced character detection with more patterns
+        String[] characterPatterns = {
+                "\\*\\*Lord Viren\\*\\*", "\\*\\*Viren\\*\\*", "Viren",
+                "\\*\\*Lady Selene\\*\\*", "\\*\\*Selene\\*\\*", "Selene",
+                "\\*\\*Elira\\*\\*", "Elira",
+                "\\*\\*The Maskbearer\\*\\*", "\\*\\*Maskbearer\\*\\*", "Maskbearer",
+                "\\*\\*Lustrines\\*\\*", "Lustrines"
+        };
 
-        for (String character : characters) {
-            if (dialogText.contains(character)) {
-                return character.toLowerCase();
+        String[] characterNames = {"viren", "selene", "elira", "maskbearer", "lustrines"};
+
+        // Check for character patterns in order of specificity
+        for (int i = 0; i < characterPatterns.length; i++) {
+            if (dialogText.matches(".*" + characterPatterns[i] + ".*")) {
+                return characterNames[i % characterNames.length];
             }
         }
+
         return null;
     }
 
     private void showCharacterImage(String characterName) {
         try {
             int imageResource = getCharacterImage(characterName);
-            if (imageResource != 0 && imageCharacter != null) {
+            if (imageResource == 0) {
+                Log.w(TAG, "No image resource found for character: " + characterName);
+                return;
+            }
+
+            // Set character image
+            if (imageCharacter != null) {
                 imageCharacter.setImageResource(imageResource);
+            }
+
+            // Set character name
+            if (characterNameText != null) {
+                characterNameText.setText(formatCharacterName(characterName));
+            }
+
+            // Show character frame if hidden
+            if (characterFrame != null && characterFrame.getVisibility() != View.VISIBLE) {
+                characterFrame.setVisibility(View.VISIBLE);
 
                 if (characterNameText != null) {
-                    characterNameText.setText(formatCharacterName(characterName));
+                    characterNameText.setVisibility(View.VISIBLE);
                 }
 
-                // Show character with animation
-                if (characterFrame != null && characterFrame.getVisibility() != View.VISIBLE) {
-                    characterFrame.setVisibility(View.VISIBLE);
-
-                    if (characterNameText != null) {
-                        characterNameText.setVisibility(View.VISIBLE);
-                    }
-
-                    // Animate appearance
-                    characterFrame.setScaleX(0f);
-                    characterFrame.setScaleY(0f);
-                    characterFrame.setAlpha(0f);
-
-                    characterFrame.animate()
-                            .scaleX(1f)
-                            .scaleY(1f)
-                            .alpha(1f)
-                            .setDuration(600)
-                            .start();
-
-                    if (characterNameText != null) {
-                        characterNameText.setAlpha(0f);
-                        characterNameText.animate()
-                                .alpha(1f)
-                                .setDuration(400)
-                                .setStartDelay(300)
-                                .start();
-                    }
-                } else if (imageCharacter != null) {
-                    // Character already visible, just update image
-                    imageCharacter.setAlpha(0f);
-                    imageCharacter.animate()
-                            .alpha(1f)
-                            .setDuration(300)
-                            .start();
-                }
+                // Simple fade-in animation
+                characterFrame.setAlpha(0f);
+                characterFrame.animate()
+                        .alpha(1f)
+                        .setDuration(400)
+                        .start();
             }
+
+            Log.d(TAG, "Character displayed: " + formatCharacterName(characterName));
+
         } catch (Exception e) {
-            Log.e(TAG, "Error showing character image", e);
+            Log.e(TAG, "Error showing character image for: " + characterName, e);
         }
     }
 
@@ -656,8 +793,6 @@ public class GameActivity extends AppCompatActivity {
         try {
             if (characterFrame != null && characterFrame.getVisibility() == View.VISIBLE) {
                 characterFrame.animate()
-                        .scaleX(0.8f)
-                        .scaleY(0.8f)
                         .alpha(0f)
                         .setDuration(300)
                         .withEndAction(() -> {
@@ -678,19 +813,21 @@ public class GameActivity extends AppCompatActivity {
     private String formatCharacterName(String name) {
         if (name == null) return "";
 
-        // Format character names for display
         switch (name.toLowerCase()) {
             case "viren":
                 return "Lord Viren";
             case "selene":
                 return "Lady Selene";
+            case "elira":
+                return "Judge Elira";
             case "maskbearer":
                 return "The Maskbearer";
+            case "lustrines":
+                return "The Lustrines";
             default:
                 return name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
         }
     }
-
     private int getCharacterImage(String characterName) {
         if (characterName == null) return 0;
 
@@ -773,37 +910,72 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void showChoices(List<Choice> choices) {
-        choiceContainer.removeAllViews();
-
-        if (choices != null && !choices.isEmpty()) {
-            for (int i = 0; i < choices.size(); i++) {
-                Choice choice = choices.get(i);
-                Button choiceButton = createChoiceButton(choice, i);
-                choiceContainer.addView(choiceButton);
+        // Validate choiceContainer before use
+        if (choiceContainer == null) {
+            Log.e(TAG, "choiceContainer is null! Cannot display choices.");
+            // Try to find it again
+            choiceContainer = findViewById(R.id.choiceContainer);
+            if (choiceContainer == null) {
+                Toast.makeText(this, "Error: Cannot display choices", Toast.LENGTH_LONG).show();
+                return;
             }
         }
+
+        choiceContainer.removeAllViews();
+
+        if (choices == null) {
+            Log.e(TAG, "Choices list is null for dialog " + currentDialogId);
+            addErrorChoice("Error: No choices available");
+            return;
+        }
+
+        if (choices.isEmpty()) {
+            Log.w(TAG, "No choices found for dialog " + currentDialogId);
+            // Check if this should be an ending dialog
+            if (!isEndingDialog(currentDialogId)) {
+                addErrorChoice("Continue Story"); // Fallback choice
+            }
+            return;
+        }
+
+        for (int i = 0; i < choices.size(); i++) {
+            Choice choice = choices.get(i);
+            Log.d(TAG, "Creating choice button: " + choice.getChoiceText());
+            Button choiceButton = createChoiceButton(choice, i);
+            choiceContainer.addView(choiceButton);
+        }
+
+        Log.d(TAG, "Added " + choices.size() + " choice buttons to container");
     }
 
+    private void addErrorChoice(String text) {
+        Button errorButton = new Button(this);
+        errorButton.setText(text);
+        errorButton.setOnClickListener(v -> {
+            // Handle error choice - maybe reload or continue
+            loadDialog(currentDialogId);
+        });
+        choiceContainer.addView(errorButton);
+    }
+
+    // Fixed choice button creation with simpler approach
     private Button createChoiceButton(Choice choice, int index) {
         Button button = new Button(this);
-
-        // Wrap long choice text for better readability
         String wrappedText = wrapChoiceText(choice.getChoiceText());
         button.setText(wrappedText);
 
-        // Use fallback if custom background not available
+        // Simpler styling without complex animations
         try {
             button.setBackgroundResource(R.drawable.choice_button_background);
         } catch (Exception e) {
-            button.setBackgroundColor(ContextCompat.getColor(this, R.color.choice_background));
+            button.setBackgroundColor(ContextCompat.getColor(this, android.R.color.holo_blue_dark));
         }
 
         button.setTextColor(ContextCompat.getColor(this, android.R.color.white));
-        button.setTextSize(14); // Slightly smaller for wrapped text
+        button.setTextSize(14);
         button.setAllCaps(false);
         button.setTag(choice.getId());
 
-        // Better button sizing for wrapped text
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
@@ -811,16 +983,26 @@ public class GameActivity extends AppCompatActivity {
         params.setMargins(0, 12, 0, 0);
         button.setLayoutParams(params);
 
-        // Add subtle animation on creation
-        button.setAlpha(0f);
-        button.animate()
-                .alpha(1f)
-                .setDuration(300)
-                .setStartDelay(index * 100) // Stagger animations
-                .start();
+        // Simple fade-in animation
+        button.setAlpha(1f);
+        button.setVisibility(View.VISIBLE);
+
+        if (index < 3) { // Only animate first few buttons to avoid delays
+            button.setAlpha(0f);
+            button.animate()
+                    .alpha(1f)
+                    .setDuration(300)
+                    .setStartDelay(index * 100)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            button.setAlpha(1f); // Ensure visibility
+                        }
+                    })
+                    .start();
+        }
 
         button.setOnClickListener(v -> handleChoiceClick(choice));
-
         return button;
     }
 
@@ -846,55 +1028,45 @@ public class GameActivity extends AppCompatActivity {
         return text;
     }
 
+    // Simplified choice click handler
     private void handleChoiceClick(Choice choice) {
-        if (!isChoiceClickable) return;
-
-        isChoiceClickable = false;
-        View clickedView = choiceContainer.findViewWithTag(choice.getId());
-        if (clickedView instanceof Button) {
-            Button clickedButton = (Button) clickedView;
-            clickedButton.setEnabled(false); // Visual feedback
-            clickedButton.setAlpha(0.7f);
+        if (!isChoiceClickable) {
+            Log.d(TAG, "Choice clicking disabled, ignoring click");
+            return;
         }
 
-        // Use background thread for database operations
+        Log.d(TAG, "Choice clicked: " + choice.getChoiceText());
+        isChoiceClickable = false;
+
+        // Visual feedback
+        View clickedView = choiceContainer.findViewWithTag(choice.getId());
+        if (clickedView instanceof Button) {
+            clickedView.setAlpha(0.7f);
+            clickedView.setEnabled(false);
+        }
+
+        // Update progress and load next dialog
         new Thread(() -> {
             try {
                 db.updateUserProgress(currentUser.getId(), choice.getNextDialogId());
                 currentDialogId = choice.getNextDialogId();
 
                 runOnUiThread(() -> {
-                    try {
-                        loadDialog(currentDialogId);
-                    } catch (Exception e) {
-                        Log.e(TAG, "Error loading next dialog", e);
-                        handleLoadError(currentDialogId, e);
-                    }
+                    loadDialog(currentDialogId);
                 });
 
             } catch (Exception e) {
                 Log.e(TAG, "Error updating progress", e);
                 runOnUiThread(() -> {
                     Toast.makeText(GameActivity.this, "Error saving progress", Toast.LENGTH_SHORT).show();
-                    // Re-enable choice clicking
                     isChoiceClickable = true;
-                    if (clickedView instanceof Button) {
-                        ((Button) clickedView).setEnabled(true);
+                    if (clickedView != null) {
                         clickedView.setAlpha(1.0f);
+                        clickedView.setEnabled(true);
                     }
                 });
             }
         }).start();
-
-        // Re-enable after delay (fallback)
-        handler.postDelayed(() -> {
-            isChoiceClickable = true;
-            View view = choiceContainer.findViewWithTag(choice.getId());
-            if (view instanceof Button) {
-                ((Button) view).setEnabled(true);
-                view.setAlpha(1.0f);
-            }
-        }, 2000);
     }
 
     private void showLoading(boolean show) {

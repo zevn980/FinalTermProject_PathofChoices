@@ -42,4 +42,8 @@
     <color name="light_gray">#F5F5F5</color>
     <color name="medium_gray">#CCCCCC</color>
     <color name="dark_gray">#666666</color>
+
+    <color name="dialog_border">#E0E0E0</color>
+    <color name="character_frame_gold">#FFD700</color>
+    <color name="character_frame_shadow">#333333</color>
 </resources>
