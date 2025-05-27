@@ -11,88 +11,205 @@ He reveals a fragment of an ancient tablet, its surface pulsing with ethereal li
 
 The weight of destiny settles upon your shoulders. What path will you choose?');
 
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (1, 'Swear your aid to Viren and help investigate the prophecy', 11);
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (1, 'Slip away to the coast and seek the source of the water''s unrest', 12);
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (1, 'Attend Lady Selene''s public trial, hoping to read her intentions', 13);
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (1, 'Follow rumors of the Maskbearer in the eastern district', 14);
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (1, 'Seek the Lustrines directly and ask them about the prophecy', 15);
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (1, 'Swear your aid to Viren and help investigate the prophecy', 6);
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (1, 'Slip away to the coast and seek the source of the water''s unrest', 7);
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (1, 'Attend Lady Selene''s public trial, hoping to read her intentions', 8);
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (1, 'Follow rumors of the Maskbearer in the eastern district', 9);
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (1, 'Seek the Lustrines directly and ask them about the prophecy', 10);
+
+
+INSERT INTO dialogs (id, text) VALUES (6, 'Swear Your Aid to Viren.
+
+Lord Viren’s gaze sharpens. He nods, then turns to the towering Aetherial Scale. 
+
+"Then we begin," he says, and hands you the fragment.
+
+By torchlight in the vaults below the Grand Hall, ancient scrolls whisper truths. 
+
+You decipher glyphs that reference a "Lost Cycle"—a time when judgment was not bound to performance, but to memory.
+
+"Someone... or something... planted this prophecy long before our courts ever existed."');
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (6, 'Continue', 11);
+
+
+INSERT INTO dialogs (id, text) VALUES (7, 'Seek the Coast’s Unrest
+
+You leave the city in secret, boots splashing through rivulets as silver rain turns to mist. 
+
+The coast groans beneath a luminous tide. The water sings to you, not in words—but in grief.
+
+A haunting vision grips you: Caelondria swallowed not by sea, but by silence.');
+
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (7, 'Continue', 12);
+
+
+INSERT INTO dialogs (id, text) VALUES (8, 'Attend Lady Selene’s Trial
+
+The marble amphitheater thrums with expectation. 
+
+Lady Selene, draped in liquid silk, performs the accused’s soliloquy. 
+
+Her voice dances like wind over water, but when her eyes meet yours—they tremble.
+
+Her expression shifts: a coded plea for aid behind her act.');
+
+
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (8, 'Continue', 13);
+
+
+INSERT INTO dialogs (id, text) VALUES (9, 'Track the Maskbearer
+
+In the veiled alleyways of the Eastern District, steam rises from grates like breath from a sleeping beast. 
+
+You follow whispers until shadow forms resolve.
+
+The Maskbearer steps forward. Their mask reflects your face.
+
+"You walk between judgment and freedom. Which do you want?"');
+
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (9, 'Continue', 14);
+
+
+INSERT INTO dialogs (id, text) VALUES (10, 'Seek the Lustrines
+
+The journey through rain-fed caverns takes days. 
+
+When you finally reach the submerged sanctum, the Lustrines rise from the water like memories made flesh.
+
+"Ah," one sings, "a ripple from the surface seeks truth. But truth is a tide, not a stone."');
+
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (10, 'Continue', 15);
 
 -- SEGMENT 2 – THE UNRAVELING
 
 -- 2A: Arbiter''s Scroll
-INSERT INTO dialogs (id, text) VALUES (11, 'In the depths of the archive, you and **Viren** pour over ancient codes and forgotten laws.
+INSERT INTO dialogs (id, text) VALUES (11, 'Setting: Deep below the Grand Hall, amid vaults lined with ancient scrolls and forgotten laws
 
-The candlelight flickers across yellowed parchments as a startling truth emerges.
+Viren: (lighting a blue aether-lamp)
+ "The Aetherial Court erased what came before. But this…" (he gestures to the tablet fragment) "This is no law of ours. It’s older."
 
-"Look here," Viren whispers, pointing to a faded inscription. "The prophecy wasn''t part of Caelondria''s divine law—it predates it entirely."
+You trace the lines etched into obsidian. Some glyphs shimmer only when touched.
 
-His eyes meet yours with growing alarm.
+Traveler:
+ "These symbols… they echo Celestial script. But this line—it’s broken."
 
-"Someone... or something... planted this prophecy long before our courts ever existed."');
+Viren: (grimly)
+ "Yes. The prophecy was fragmented during the Founding Judgment. The founders feared what it foretold."
+
+As you work, you uncover a passage hidden in spectral ink:
+
+"He who rewrites truth must first break it."
+
+Traveler:
+ "Then the prophecy was meant to change. To evolve."
+V
+iren:
+ "And that frightens the Scale. Because change means fallibility."');
 
 INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (11, 'Confront the Scale itself by requesting an Audience of Judgment', 111);
 INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (11, 'Seek the Lustrines for their memory of Caelondria before the courts', 112);
 INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (11, 'Attempt to modify the prophecy secretly', 113);
 
 -- 2B: Depths of Memory
-INSERT INTO dialogs (id, text) VALUES (12, 'The coastal waters stretch endlessly before you, glowing with an otherworldly blue radiance.
+INSERT INTO dialogs (id, text) VALUES (12, 'Setting: Underwater caverns off the coast, glowing with ethereal blue currents. Echoes resonate like distant songs.
 
-Ancient voices hum beneath the waves, their melody both beautiful and haunting.
+As you dive, water cradles you like silk. A harmonic resonance begins to pulse.
 
-Suddenly, a vision crashes into your mind like a tidal wave:
+A shape—not of this time—emerges from the depths.
 
-*Caelondria drowning in absolute silence. Citizens frozen mid-step, their voices stolen forever. The great courts crumbling into dust.*
+Lustrine Apparition: (voice layered like many tides)
+ "Child of surface, why return to the womb of truth?"
 
-The vision fades, but the water''s song continues to call to you from the depths.');
+Traveler:
+ '"This vision… it's a warning. Caelondria drowning, but not from flood. From silence."'
+
+Apparition:
+ "Memory denied becomes rot. Justice performed becomes farce. The Aetherial Scale sings only its own name."
+Suddenly, an image: Lady Selene, crying alone in her court chambers. The Maskbearer, placing a relic in a fountain. Viren, eyes blank before a mirror.
+
+Traveler:
+ "What are these? The past? The future?"
+
+Apparition:
+ "Yes." ');
 
 INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (12, 'Dive deeper, risking your breath, to find the source', 121);
 INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (12, 'Capture and analyze the harmonic energy in the water', 122);
 INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (12, 'Record and release the vision to the public', 123);
 
 -- 2C: Curtain of Smoke
-INSERT INTO dialogs (id, text) VALUES (13, 'The trial ground buzzes with anticipation as **Lady Selene** takes center stage.
+INSERT INTO dialogs (id, text) VALUES (13, 'Setting: The Grand Amphitheater, mid-trial. The audience is breathless.
 
-Her performance is mesmerizing—silk scarves dancing through the air, illusions that dazzle the crowd. The audience is captivated.
+Lady Selene: (in full dramatic flair)
+ '"O Caelondria, do you judge me for truth or for spectacle?"'
 
-But when her emerald eyes find yours across the plaza, something shifts.
+The crowd roars approval. But her eyes find yours—piercing, desperate.
 
-Her confident smile falters for just a heartbeat. In that brief moment, you see raw fear—and a desperate, silent plea for help.
+Lady Selene: (quietly, under breath, to you)
+ '"You know what this is. Don't let them win."'
 
-The trial continues around you, but you sense this is your moment to act.');
+Traveler: (quietly)
+ '"What do you mean? What's really on trial?"'
+
+She twirls dramatically toward the crowd.
+
+Lady Selene:
+ '"What if I told you prophecy lived? That judgment was not divine, but scripted?"'
+
+The magistrate slams a gavel.
+
+Magistrate:
+ '"Order! Lady Selene, this is heresy!"'
+
+Lady Selene: (to you, softly as she dragged away)
+ "Find the Maskbearer. Or Viren. Or the tide itself. The curtain’s falling."');
 
 INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (13, 'Publicly accuse her of hiding the prophecy', 131);
 INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (13, 'Secretly visit her backstage', 132);
 INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (13, 'Disrupt the trial with a false confession', 133);
 
 -- 2D: Mask of Iron
-INSERT INTO dialogs (id, text) VALUES (14, 'The eastern district''s narrow alleys twist like a maze in the evening mist.
+INSERT INTO dialogs (id, text) VALUES (14, ' Setting: A rooftop in the Eastern District. Moonlight reflects off brass pipes and watery tiles.
 
-Shadows shift and dance until a figure emerges from the darkness—**the Maskbearer**.
+The Maskbearer steps from the dark, a cloak of woven mist around them.
 
-Their iron mask reflects the lamplight like a mirror, hiding their true face completely.
+Maskbearer:
+ '"Traveler. The Scale judges, but never listens. You can change that. But not without dirtied hands."'
 
-"So," they speak, their voice distorted but strangely compelling, "another seeker of truth arrives."
+Traveler:
+ '"You''ve manipulated events. Selene, Elira, even Viren."'
 
-They step closer, and you feel the weight of their hidden gaze.
+Maskbearer: (tilting head)
+ "All puppets. As are we. The difference is—I see the strings."
 
-"Tell me, wanderer—do you want truth, or do you want change? Because in Caelondria, you cannot have both."');
+A gust of wind scatters paper talismans. On one is your face.
+
+Maskbearer:
+ "You must choose: truth that burns, or peace that blinds."');
 
 INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (14, 'Accept their help to sabotage the Scale', 141);
 INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (14, 'Pretend to ally with them, but report to Elira', 142);
 INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (14, 'Convince the Maskbearer to delay action until you learn more', 143);
 
 -- 2E: Song of the Depths
-INSERT INTO dialogs (id, text) VALUES (15, 'The **Lustrines** emerge from the depths like living liquid, their forms shimmering between water and flesh.
+INSERT INTO dialogs (id, text) VALUES (15, 'Setting: The submerged sanctum of the Lustrines. Crystal water forms spires. A choir of memory surrounds you.
 
-Their eldest speaks in harmonies that resonate in your bones:
+Lustrine Elder:
+ "Ah, the Traveler dares ask the tides their secrets."
 
-"Child of land, you seek answers to questions that have been asked many times before."
+Traveler:
+ "Is the prophecy real? Or just a myth?"
 
-The water around you glows brighter as their revelation unfolds.
+Lustrine Elder: (smiling sadly)
+ "It is both. It is always. Caelondria has drowned before. And each time, a lie became law."
 
-"The Prophecy is a repeating cycle. Caelondria has been reborn many times—each time forgetting, each time falling to the same fate."
+You’re led to a pool of living memory. Visions swirl: Past cities. Past versions of Viren and Selene. Past you.
 
-The weight of countless lost civilizations presses down upon you.');
+Traveler:
+ "What… what is this?"
+
+Lustrine Elder:
+ "A cycle. The same souls reshaping new masks. Break it—and we break ourselves."');
 
 INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (15, 'Ask how to break the cycle', 151);
 INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (15, 'Ask to join their memorystream', 152);
@@ -101,435 +218,762 @@ INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (15, 'Steal 
 -- SEGMENT 3 – THE DEEPER MYSTERIES
 
 -- 3A1: Audience of Judgment
-INSERT INTO dialogs (id, text) VALUES (111, 'The great chamber of the Aetherial Scale thrums with ancient power.
+INSERT INTO dialogs (id, text) VALUES (111, 'Setting: The Sanctum of Judgment. An immense, cathedral-like chamber where the Aetherial Scale hovers, suspended by streams of hydro-crystal energy.
 
-As you approach, the Scale itself awakens—its crystalline form pulsing with ethereal light.
+You and Viren kneel before the divine mechanism. 
+Its arms, weighted by liquid silver and gold, begin to stir.
 
-**The Scale** speaks, its voice echoing from everywhere and nowhere:
+Viren: (his voice low)
+ "This is no court, Traveler. This is the echo of gods who no longer speak."
 
-"Mortal flesh seeks to judge the eternal judge? How... amusing."
+A choir of robed Arbiters flanks the chamber.
 
-The air crackles with energy as the Scale''s attention focuses entirely upon you.
+Scale Voice (mechanical, resonant):
+ '"State your anomaly."'
 
-"You dare question the very foundation of justice itself?"');
+Traveler: (stepping forward)
+ '"The prophecy. It predates you. It speaks of collapse. It has already begun."'
 
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (111, 'Demand the Scale justify its prophecy', 301);
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (111, 'Ask the Scale to show you the truth', 302);
+The Scale hesitates. The water around it shudders.
+
+Scale Voice:
+ '"Truth unconfirmed. Judgment pending."'
+
+Viren: (to you, quickly)
+ '"It doesn''t recognize the prophecy. It fears irrelevance."'
+
+Suddenly, a light flares—the Scale begins weighing you.
+
+Scale Voice:
+ '"Subject: Undefined. Role: Interfering variable. Judgment: To be Determined."'');
+
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (111, "You’ve triggered a sequence known as Verdict’s Edge. The Scale is sentient—and unstable.", 201);
 
 -- 3A2: Lustrine Memory
-INSERT INTO dialogs (id, text) VALUES (112, 'The **Lustrines** surround you in a circle of flowing water and ancient wisdom.
+INSERT INTO dialogs (id, text) VALUES (112, 'Setting: The hidden passage beneath the Hall leads you and Viren deep into the Veiled Springs.
 
-"We will show you," their eldest intones, "the time before the Scale''s dominion."
+The Lustrines rise from their pool, curious.
+L
+ustrine Seer:
+ '"You again, Arbiter’s ghost. What does your mortal machine want this time?"'
 
-Visions flood your mind:
+Viren: (bowing, uncharacteristically humble)
+ "To remember what we buried."
 
-*Ancient Caelondria—a time of organic justice, where communities settled disputes through understanding rather than rigid law.*
+The Seer waves a hand. A memory blossoms—a younger Viren arguing with the First Court, pleading against the creation of the Scale.
 
-*The first arrival of the Scale, promising order but slowly stealing the people''s ability to think for themselves.*
+Traveler: (astonished)
+ '"You were against it?"'
 
-The memories are overwhelming, beautiful, and terrifying.');
+Viren:
+ '"I was human then."'
 
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (112, 'Learn the original laws of the land', 301);
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (112, 'Witness the Scale''s first judgment', 302);
+Lustrine Seer:
+ '"The truth is: Caelondria''s perfection was forged from betrayal. You both are echoes of resistance."'
+
+The Seer offers a silver flask.
+
+Lustrine Seer:
+ '"Drink, and see what the Scale denies."'
+');
+
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (112, " You’ve been granted access to the Memory Spiral.", 206);
 
 -- 3A3: Secret Modification
-INSERT INTO dialogs (id, text) VALUES (113, 'In the dead of night, you attempt to alter the prophecy''s ancient inscription.
+INSERT INTO dialogs (id, text) VALUES (113, 'Setting: Within the vault, by candlelight, you and Viren prepare a glyph-sculptor.
 
-Your fingers trace the glowing symbols, but the moment you try to change them, searing pain shoots through your hands.
+Traveler:
+ '"If it can be rewritten, we might control what happens next."'
 
-The words resist your touch, burning with the fury of ages.
+Viren: (gravely)
+ '"But who decides what truth becomes?"'
 
-Ancient protective magic guards every letter, every meaning.
+You alter the prophecy fragment, changing one line:
+'"“Four trials, one truth”" → "“Four trials, one choice.”"'
 
-As you persist, the tablet grows hotter—warning of consequences beyond imagination.
+The air thickens. Ink seeps up from the floor. The glyphs resist.
 
-Yet you sense that forcing this change might be possible... if you''re willing to pay the price.');
+Viren:
+ '"It’s fighting back. It knows."'
 
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (113, 'Force the change despite the pain', 301);
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (113, 'Retreat and seek another way', 302);
+Suddenly, a beam of aetherial light surges upward—a warning. The Aetherial Scale feels the alteration.
+Viren:
+ '"The mechanism is aware. We may have doomed or saved it. There’s no going back."'');
+
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (113, 'You have unknowingly triggered a feedback loop within the Scale judgment protocol.', 206);
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (113, 'Collapse in the Crowd, depending on whether you reveal it.', 205);
+
+INSERT INTO dialogs (id, text) VALUES (121, 'Setting: Beneath the harmonic waters, where pressure crushes and light fails.
+
+You inhale sharply—then plunge deeper, following the thrum of forgotten frequencies. 
+
+Shapes shimmer: buildings of coral-glass, overgrown with memory.
+
+You reach a massive stone locked in the seabed—an ancient version of the Aetherial Scale, long rusted and silent.
+
+A Lustrine spirit watches.
+
+Lustrine Warden: (echoing inside your mind)
+ '"You seek the Source. But breath is time, and time runs dry."'
+
+Traveler: (struggling for air)
+ '"This machine... it came before?"'
+
+Warden:
+ "It judged stars. Then men. Then myths. Until it drowned in pride."
+Your lungs burn. The Warden places a hand on your chest.
+Warden:
+ "To see the truth, you must die to what you are… or surface now, and forget."
+You gasp—');
+
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (121, 'The Memory Spiral (if you accept the vision)', 306);
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (121, 'Collapse in the Crowd (if you return and speak of it)', 305);
 
 -- 3B1: Diving Deep
-INSERT INTO dialogs (id, text) VALUES (121, 'You plunge beneath the glowing waters, your lungs burning as you descend.
+INSERT INTO dialogs (id, text) VALUES (122, 'Setting: The beach at twilight. You set up resonance-capture crystals, aided by a wandering scholar named Seren.
 
-The pressure builds, but your determination drives you deeper.
+Seren: (adjusting the dial)
+ '"If I’m right, these waves are more than water. They''re memory—echoing judgment."'
 
-Through the blue luminescence, ancient structures emerge—a sunken temple where the first **Lustrines** once dwelt.
+Traveler:
+ '"Why would memory resonate like music?"'
 
-Carved into its walls are symbols that predate any known language.
+Seren: (smirking)
+ '"Because Caelondria is a stage, not a city. Everything here plays a role. Even truth."'
 
-As your breath runs low, you must choose: explore this sacred place or surface to safety.
+The crystals pulse. One explodes—images spill out: Selene weeping in chains, the Maskbearer removing their mask, Elira shooting into the sky.
 
-The temple''s entrance beckons, promising answers... or doom.');
+Seren: (whispers)
+ '"This… isn’t science. It’s soulprint. These aren’t just memories. They’re potential futures."'
 
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (121, 'Enter the temple', 301);
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (121, 'Surface and bring others', 302);
+Traveler: (stunned)
+ '"Then we’re not just watching… we’re choosing."'
+
+ Outcome: You’ve extracted “future-memory.” The path ahead can be altered with foresight');
+
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (122, 'Precedent Shift (optional timeline shift)', 203);
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (122, 'The Memory Spiral', 206);
 
 -- 3B2: Harmonic Analysis
-INSERT INTO dialogs (id, text) VALUES (122, 'Using an ancient resonance device, you capture the water''s mysterious energy.
+INSERT INTO dialogs (id, text) VALUES (123, 'Setting: You return to the city square. A crowd gathers as you project the harmonic vision into the fountain’s surface.
 
-The patterns that emerge are astounding—the prophecy''s rhythm matches perfectly with the city''s own heartbeat.
+The water swirls—showing destruction, silence, drowned courts.
 
-Every footstep, every breath, every word spoken in Caelondria pulses in time with this ancient force.
+Nobleman: (gasping)
+ '"This… this is the prophecy!"'
 
-The realization hits you like a thunderbolt:
+Commoner: (crying out)
+ '"They knew and lied to us!"'
 
-*The prophecy isn''t predicting the city''s fate—it''s actively controlling it.*
+Elira Valen storms in, pistol drawn.
 
-The very rhythm of life in Caelondria has been orchestrated from the beginning.');
+Elira:
+ '"Who showed this? WHO?"'
 
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (122, 'Disrupt the rhythm', 301);
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (122, 'Follow the pattern to its source', 302);
+Traveler:
+ '"I did. The people deserve truth."'
+
+She stares at the vision—then lowers her weapon.
+
+Elira: (softly)
+ '"Then we’re out of time."'
+
+The crowd erupts into panic.
+
+Maskbearer (from shadows):
+ "Well done, truthbearer. Now chaos may finally speak."
+');
+
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (123, 'Public unrest spreads. The illusion of order is broken', 205);
 
 -- 3B3: Public Revelation
-INSERT INTO dialogs (id, text) VALUES (123, 'Your vision spreads through the city like wildfire.
+INSERT INTO dialogs (id, text) VALUES (131, 'Setting: The Grand Amphitheater, filled with nobles and commoners alike.
 
-In the marketplaces, people whisper of the drowning city. In the courts, judges pause mid-sentence as the images flood their minds.
+Lady Selene’s voice rings like music as she delivers a poetic soliloquy on justice. But her gaze falters when it meets yours.
 
-**Elira** rushes to find you, her face pale with fury.
+Traveler (interrupting):
+ '"Selene, how long have you known? The prophecy—how deep does your performance go?"'
 
-"What have you done?" she demands. "The people are demanding answers we don''t have!"
+Gasps echo. The judge-bell ceases tolling.
 
-The crowd grows restless, their voices rising in confusion and fear.
+Lady Selene: (composed, then bitter)
+ '"Such accusations… in public? Clever."'
 
-The very foundations of order begin to crack under the weight of revealed truth.');
+She steps forward, arms wide like a starlet basking in moonlight.
 
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (123, 'Lead the uprising', 301);
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (123, 'Hide and observe the chaos', 302);
+Selene:
+ '"Yes, I knew. I read it in the veins of the Scale. But truth isn’t light—it blinds. The people are not ready."'
+
+High Arbiter Viren (emerging):
+ '"And who made you their protector?"'
+
+A ripple of argument surges through the crowd.
+
+Selene (to you, quietly):
+ '"You just shattered the illusion. Now be ready to live with what rises."'
+
+Outcome: You’ve exposed the secret, triggering both fear and inspiration in the people.');
+
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (131, 'Collapse in the Crowd', 205);
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (131, 'Precedent Shift', 203);
 
 -- 3C1: Public Accusation
-INSERT INTO dialogs (id, text) VALUES (131, 'Your voice cuts through the trial''s pageantry like a blade.
+INSERT INTO dialogs (id, text) VALUES (132, 'Setting: Velvet curtains and hidden mirrors backstage. Selene sits alone, applying silver pigment to her eyes.
 
-"**Lady Selene** knows more than she reveals! She hides the prophecy''s true meaning!"
+Selene: (without looking up)
+ '"I hoped you’d come. You see more than the rest."'
 
-The crowd gasps. Selene''s mask of composure finally cracks, revealing the frightened woman beneath.
+Traveler:
+ '"You looked at me like you knew the prophecy. I need the truth."'
 
-"You don''t understand," she pleads, her voice breaking. "I was protecting them... protecting all of us!"
+She removes her headdress—underneath, her hair is streaked with blue flame, like a Lustrine’s glow.
 
-The trial descends into chaos as spectators demand answers.
+Selene:
+ '"I was born in the flood years. Half-Lustrine. I can hear the Scale’s hum when it lies."'
 
-Guards move to restrain you, but Selene holds up a trembling hand to stop them.');
+She hands you a crystal:
 
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (131, 'Press your advantage', 301);
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (131, 'Offer her a chance to explain', 302);
+Selene:
+ '"This contains its first failure. When the Scale judged an innocent child and called it balance."'
+
+Traveler: (softly)
+ '"And now?"'
+
+Selene:
+ '"We need to tip the Scale... not with weight, but with song."'
+
+Outcome: You gain Selene’s trust and access to secret court records. A quiet alliance begins.');
+
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (132, 'Precedent Shift', 301);
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (132, 'The Memory Spiral', 302);
 
 -- 3C2: Backstage Secrets
-INSERT INTO dialogs (id, text) VALUES (132, 'Behind the trial''s grand stage, **Selene** waits in her private tent.
+INSERT INTO dialogs (id, text) VALUES (133, 'Setting: The trial crescendos. The judge is about to declare sentence.
 
-Her confident performance mask has fallen away, revealing exhausted features and worried eyes.
+You rise suddenly.
 
-"I wondered when someone would see through the illusion," she says quietly.
+Traveler:
+ '"I was the one who tampered with the prophecy!"'
 
-She reveals a hidden scroll—the prophecy''s true, complete text.
+Silence. The entire amphitheater turns.
 
-"The version the courts know is a fragment. The real prophecy... it''s worse than they imagine. I''ve been protecting the city from despair."
+Lady Selene: (startled, but playing along)
+ '"My stars... I never suspected."'
 
-Her hands shake as she shows you words that could shatter nations.');
+Judge: (narrowing eyes)
+ '"Then you shall face the Scale."'
 
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (132, 'Join her in the deception', 301);
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (132, 'Convince her to reveal the truth', 302);
+As you’re seized, Selene slips a tiny whisper into your ear:
+
+Selene: (softly)
+ '"Smart move. Now you’re in the chamber where truths are rewritten."'
+
+Outcome: You are sent to the heart of the Scale—its judgment vault.');
+
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (133, 'Judgment Echo', 201);
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (133, 'The Memory Spiral' , 206);
 
 -- 3C3: False Confession
-INSERT INTO dialogs (id, text) VALUES (133, 'You leap onto the trial platform, your voice booming across the plaza.
+INSERT INTO dialogs (id, text) VALUES (141, 'Setting: A secret chamber beneath the Eastern District. The Maskbearer removes a panel revealing the Scale’s power lines—pulsing with liquid judgment.
 
-"I confess! I am the one who awakened the prophecy!"
+Maskbearer: (soft, sharp)
+ '"The people worship a lie. But we can make them feel the truth."'
 
-The crowd erupts in shocked murmurs. **Selene** stares at you in horror and confusion.
+Traveler: (uneasy)
+ '"Sabotage risks collapse. Are you sure it’s the only way?"'
 
-Your false confession creates chaos—the real trial is forgotten as guards rush toward you.
+Maskbearer:
+ '"I was once a Judge. I saw it condemn a mother who saved her child from drowning because mercy ‘disrupted balance.’"'
 
-In the confusion, you catch Selene''s grateful but terrified gaze.
+You plant resonance disruptors—then step back.
 
-You''ve bought her time, but at what cost to yourself?');
+Maskbearer (to you):
+ "The truth doesn’t wait. Neither should we."
 
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (133, 'Escape in the confusion', 301);
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (133, 'Stand your ground and speak truth', 302);
+A surge of energy cracks the silver circuits. The Scale emits a keening whine across the city.
+
+Outcome: The Scale is destabilized. Public hearings distort. Chaos starts to spread—but so does awareness.');
+
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (141, 'Collapse in the Crowd', 205);
 
 -- 3D1: Alliance with Maskbearer
-INSERT INTO dialogs (id, text) VALUES (141, 'The **Maskbearer** leads you through hidden passages beneath the city.
+INSERT INTO dialogs (id, text) VALUES (142, 'Setting: After your meeting, you slip away through a whisper-tunnel and reach Elira’s hideout.
 
-In a forgotten chamber, they reveal the Scale''s greatest weakness:
+Elira: (arms folded, suspicious)
+ '"So the ghost in the mask wants to burn the city?"'
 
-"It feeds on the people''s belief in absolute justice. But it fears their judgment above all else."
+Traveler:
+ '"They''re planning a sabotage. You have a chance to stop it."'
 
-They show you ancient mechanisms—ways to turn the city''s own infrastructure against the Scale.
+Elira (pacing):
+ '"And what do you want, truthseeker? Chaos? Or justice?"'
 
-"The people created the Scale through their desire for perfect order. They can unmake it through their demand for imperfect freedom."
+Traveler:
+ '"I want to choose. Not be told."'
 
-The plan is dangerous, but it might be Caelondria''s only hope.');
+She nods—then hands you a silent flare.
 
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (141, 'Help them expose the Scale', 301);
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (141, 'Warn the Scale of the plot', 302);
+Elira:
+ '"When they move, light this. We’ll intervene. Maybe we’ll save more than the city."'
+
+Outcome: You now walk a line between rebellion and resistance. Your choice will determine who survives the fallout.
+');
+
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (142, ' Broken Court', 204);
 
 -- 3D2: Double Agent
-INSERT INTO dialogs (id, text) VALUES (142, 'The **Elira** listens intently to your report about the Maskbearer''s plans.
+INSERT INTO dialogs (id, text) VALUES (143, 'Setting: Rooftop overlooking the Aetherial Court. The Maskbearer kneels, mask in hand.
 
-"Excellent work," she says, but something in her eyes suggests she knows more than she''s revealing.
+Traveler:
+ '"Sabotage will only feed the fire. Wait—let me uncover what lies beneath first."'
 
-As you leave her chambers, you notice **the Maskbearer** waiting in the shadows.
+Maskbearer (pausing):
+ '"You''re not like the others. You ask, instead of preach."'
 
-"Did you really think I wouldn''t expect your betrayal?" they ask, seemingly amused.
+Traveler:
+ '"What if I learn something that ends it without ruin?"'
 
-"The game is more complex than you realize, double agent. Even Elira serves masters she doesn''t fully understand."
+Maskbearer: (after a long silence)
+ '"One week. Then we flood the truth."'
 
-You realize you''ve walked into a web far more intricate than you imagined.');
+Outcome: You’ve earned time and a strange trust. The Maskbearer holds the flood back—for now.
+');
 
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (142, 'Prepare for the Maskbearer''s counter-move', 301);
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (142, 'Try to genuinely ally with Elira', 302);
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (143, 'The Memory Spiral', 306);
 
--- 3D3: Delay and Learn
-INSERT INTO dialogs (id, text) VALUES (143, 'The **Maskbearer** considers your words carefully.
 
-"Time serves the prophecy, not us," they warn, but nod slowly. "Yet perhaps delay brings wisdom."
+INSERT INTO dialogs (id, text) VALUES (151, 'Setting: A hidden lagoon deep beneath Caelondria. Luminescent water cradles ancient stone runes. The Lustrines drift like spirits made of sea and light.One, older than the tide, speaks.
 
-They grant you three days to gather information before they act.
+Elder Lustrine: (softly, like water on marble)
+ '"Cycles repeat because the hearts that drive them remain unchanged."'
 
-"Use this time well, seeker. When next we meet, you must choose: stand with the revolution or watch Caelondria burn."
+Traveler:
+ '"How do I break what was always meant to repeat?"'
 
-As they fade back into the shadows, you feel the weight of borrowed time.
+The Elder draws glyphs in the water.
+Elder Lustrine:
+ '"To end the cycle, you must choose a moment... and anchor truth in it. But truth is heavier than stone."'
 
-Three days to prevent catastrophe—or ensure it happens on your terms.');
+Another Lustrine approaches—a child with silver eyes.
 
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (143, 'Use the time to gather allies', 301);
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (143, 'Seek the prophecy''s origin', 302);
+Child Lustrine:
+ '"You’ll need a memory so strong it survives forgetting."'
+
+They guide you to the Pool of First Judgments.
+Elder Lustrine:
+ "Choose wisely. This truth will shape all futures."
+
+Outcome: You gain insight into the nature of the prophecy as a memory loop. You may choose to intervene at the root.
+');
+
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (151, 'The Memory Spiral', 306);
 
 -- 3E1: Breaking the Cycle
-INSERT INTO dialogs (id, text) VALUES (151, 'The **Lustrines** exchange glances that ripple through the water like silent conversations.
+INSERT INTO dialogs (id, text) VALUES (152, 'Setting: You kneel before the lagoon. The Lustrines chant as their water encircles you. Your mind slips into their shared stream.
 
-Their eldest speaks with infinite sadness:
+You fall through time—witnessing the first founding of Caelondria, the rise of the Aetherial Scale, the first collapse.
 
-"To break the cycle, someone must remember all the iterations—every life lost, every attempt failed, every hope crushed."
+A city reborn in beauty… but always with judgment at its core.
+You watch as each era repeats—different masks, same melody.
 
-The water around you grows heavy with the weight of cosmic responsibility.
+Traveler (in memory):
+ '"We’ve never escaped. Only performed escape."'
 
-"The burden would drive mortals mad. Yet without this sacrifice, the cycle continues eternally."
+A voice echoes—it’s Lady Selene, her younger self.
 
-They extend a tendril of living water toward you.
+Selene (memory):
+ '"If the city must collapse to learn... let it collapse beautifully."'
 
-"Are you prepared to carry the memories of ten thousand lifetimes?"');
+You wake. The Lustrines are watching.
 
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (151, 'Volunteer to bear the memory', 301);
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (151, 'Find another way', 302);
+Elder Lustrine:
+ '"Now you understand. What will you do with that truth?"'
+
+Outcome: You carry the full stream of Caelondria’s cycles within you—along with the knowledge to change one.
+');
+
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (152, 'The Memory Spiral', 306);
 
 -- 3E2: Joining the Stream
-INSERT INTO dialogs (id, text) VALUES (152, 'You allow the **Lustrines** to guide you into their collective consciousness.
+INSERT INTO dialogs (id, text) VALUES (153, 'Setting: While the Lustrines sleep in their moon-suspended trance, you sneak through the Memory Grotto.
 
-The memorystream engulfs you—a torrent of experiences spanning millennia.
+Your eyes lock on a glyph-crystal, still pulsing with scenes from the first Cycle’s collapse.
 
-You feel the joy of children playing in ancient streets, the sorrow of lovers separated by war, the wisdom of elders watching civilizations rise and fall.
+You hesitate—then snatch it.
 
-Every emotion, every thought, every dream of countless lives flows through you.
+Alarms of soft song rise. Water begins to swirl.
 
-In this vast tapestry of existence, your individual self begins to dissolve.
+Lustrine Voice (in your mind):
+ '"To steal memory is to forget yourself."'
 
-Yet you sense you could return to yourself... if you choose to resist the stream''s embrace.');
+You flee—but not unchanged. Visions assault you.
 
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (152, 'Merge completely with the stream', 301);
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (152, 'Maintain your individual identity', 302);
+Lady Selene drowning.
+
+Elira shot by Viren.
+
+ The Maskbearer unmasked... as you.
+You stumble into the streets of Caelondria—half-lost in time.
+
+Outcome: You now possess forbidden memory—but reality begins to slip.
+');
+
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (153, ' Collapse in the Crowd', 205);
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (153, ' Echoes Reclaimed', 306);
 
 -- 3E3: Stealing Memory
-INSERT INTO dialogs (id, text) VALUES (153, 'You snatch the crystal relic from the **Lustrines''** sacred altar.
+INSERT INTO dialogs (id, text) VALUES (205, 'Setting: The Aetherial Court square. The Scale sputters sparks. Selene’s trial is interrupted. A storm gathers—not of weather, but of truth.
 
-The moment your fingers close around it, ancient knowledge floods your mind—but so do their anguished cries.
+The people scream. Nobles shove commoners. The Scale releases a wail, discordant and unnatural.
 
-"Thief! Destroyer! You know not what you steal!"
+Maskbearer (appearing above the chaos):
+ '"The prophecy has been fulfilled. Not because fate demands it, but because lies can only bear so much weight."'
 
-The relic burns with stolen memories, its power intoxicating yet corrupting.
+Lady Selene (shouting):
+ '"Stop! We can still control the descent—"'
 
-As you flee through the water, their lamentations follow you like a curse.
+But a noble strikes her with a thrown emblem. She stumbles. The crowd surges.
+');
 
-You possess fragments of ultimate truth, but at the cost of an entire people''s trust.
-
-The relic''s knowledge is yours—but its burden may destroy you.');
-
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (153, 'Use the relic''s power immediately', 301);
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (153, 'Return and seek forgiveness', 302);
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (205, 'Take Control and Calm the People', 215);
 
 -- SEGMENT 4 – VERDICT''S EDGE
 
 -- 4A: Collapse in the Crowd
-INSERT INTO dialogs (id, text) VALUES (301, 'The city erupts into chaos as truth collides with order.
+INSERT INTO dialogs (id, text) VALUES (215, 'Setting: The Aetherial Court square. The Scale sputters sparks. Selene’s trial is interrupted. 
+A storm gathers—not of weather, but of truth.
 
-In the grand plaza, citizens demand answers while judges flee their benches. **The Maskbearer** emerges from hiding, their voice booming across the square:
+The people scream. Nobles shove commoners. The Scale releases a wail, discordant and unnatural.
 
-"The prophecy is fulfilled! The lies drown in truth, and the scale tips toward freedom!"
+Maskbearer (appearing above the chaos):
+ '"The prophecy has been fulfilled. Not because fate demands it, but because lies can only bear so much weight."'
 
-Ancient mechanisms activate throughout the city. The Aetherial Scale''s perfect order crumbles as people remember how to think for themselves.
+Lady Selene (shouting):
+ '"Stop! We can still control the descent—"'
 
-But in the chaos, you see both hope and terror in the citizens'' faces.
+But a noble strikes her with a thrown emblem. She stumbles. The crowd surges.
+');
 
-Freedom is messy, dangerous, and utterly human.');
-
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (301, 'Take control and calm the people', 401);
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (301, 'Let the chaos run its course', 402);
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (215, 'Tides of Choice', 305);
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (215, ' Let the Chaos Run Its Course', 225);
 
 -- 4B: The Memory Spiral
-INSERT INTO dialogs (id, text) VALUES (302, 'You spiral through layers of time and memory, experiencing the weight of every previous collapse.
+INSERT INTO dialogs (id, text) VALUES (225, 'You step back, into shadow.
 
-The first Caelondria—destroyed by war.
-The second—consumed by plague.
-The third—lost to despair.
-The fourth—erased by tyranny.
+Traveler (softly):
+ '"If they never learn, let them drown in their own judgment."'
 
-Each iteration tried to solve the problems of the last, only to create new disasters.
+You walk away as the court collapses. Fires spark. The Scale cracks and falls like a dying god.
 
-Now you stand at the threshold of the fifth collapse, armed with the knowledge of all previous failures.
+Lady Selene (faintly):
+ '"At least now... the curtain falls honestly."'
 
-The pattern is clear: perfection cannot be imposed, only grown.
+Elira (later):
+ '"You chose silence. That too, is a judgment."'
 
-But will Caelondria listen to lessons written in its own forgotten blood?');
+Outcome: Caelondria descends into anarchy. Only fragments may rise again');
 
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (302, 'Rewrite the current cycle', 403);
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (302, 'Anchor yourself in one of the past realities', 404);
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (225, 'Judgment Broken', 503);
 
 -- SEGMENT 5 – THE FINAL CHOICE
 
 -- 5A: Tides of Choice
-INSERT INTO dialogs (id, text) VALUES (401, 'Your voice cuts through the chaos like a beacon.
+INSERT INTO dialogs (id, text) VALUES (206, 'Setting: A dreamscape stitched from flowing memories. You float in the spiral stream of Lustrine memory, seeing Caelondria’s four rebirths.
 
-"Citizens of Caelondria! We stand at the crossroads between tyranny and anarchy!"
+The Elder Lustrine:
+ "Each time, the city ends with the same breath. Judgment consumes itself. And yet… each cycle leaves a scar."
 
-The crowd slowly turns to listen as you step forward.
+You witness:
 
-"We can create something new—courts of wandering judges who serve the people, not power. Justice that grows from understanding, not rigid law."
+First Era: Caelondria as a flood-borne village ruled by seers.
 
-**Viren** joins you, then **Elira**, and even some of the former court officials.
 
-Together, you forge a new system where the Aetherial Scale serves as a tool, not a master.
+Second: A kingdom of theater-law, where truth was performance.
 
-The transition is difficult, but hope blooms in the streets.');
 
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (401, 'Spread this new justice across the world', 501);
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (401, 'Keep it local, protecting Caelondria', 502);
+Third: The first Aetherial Scale, made by Selene’s ancestor.
+
+
+Fourth: The current age—fractured, fragile, forgetting.
+');
+
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (206, 'Rewrite the Current Cycle', 216);
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (206, 'Tides of Choice', 305);
 
 -- 5B: Echoes Reclaimed
-INSERT INTO dialogs (id, text) VALUES (402, 'You choose to let the chaos unfold naturally.
+INSERT INTO dialogs (id, text) VALUES (216, 'You reach out to the present memory and twist it—replacing the core judgment law with empathy as equilibrium.
 
-The old order crumbles completely, but from its ashes, something unprecedented emerges.
+Traveler:
+ "Let Caelondria be judged by how it lifts its weakest… not by symmetry, but by soul."
 
-Citizens form their own councils. Neighbors help neighbors resolve disputes. The rigid hierarchy dissolves into organic community.
+The spiral shivers—and resets. You wake in a new court. The people speak truth without fear.
 
-You find yourself walking between the present moment and glimpses of all possible futures.
+Outcome: A new path is formed—justice reborn.');
 
-Reality trembles around you as the boundaries between what is and what could be begin to blur.
-
-You have become a living bridge between worlds—forever changed, forever changing.');
-
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (402, 'Let the worlds merge into one', 503);
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (402, 'Sever the link and accept your rewritten truth', 504);
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (216, 'Tides of Choice', 305);
 
 -- 5C: Cycle Rewriter
-INSERT INTO dialogs (id, text) VALUES (403, 'With the power to rewrite history flowing through you, every possible future spreads before your consciousness.
+INSERT INTO dialogs (id, text) VALUES (226, 'You grip the memory of the Second Era—the poetic court where trials were plays.
 
-You could create a perfect world where suffering never existed.
-You could preserve every life lost in previous cycles.
-You could make Caelondria a paradise beyond imagination.
+Traveler (whispering):
+ '"Let that be my truth."'
 
-But as you reach for ultimate power, you pause.
+You awaken... but it’s not the same Caelondria.
 
-The weight of playing god settles upon your shoulders like lead.
+Lady Selene is a priestess-poet. Elira is a rebel bard. The Maskbearer never wore a mask.
 
-Perfect worlds lack growth. Paradise without struggle breeds stagnation.
+Selene:
+ '"We knew you''d return. The audience awaits."'
 
-Perhaps the greatest act of power is choosing restraint.');
+Outcome: You live in an echo—a Caelondria that once was. But others begin to hear the song of change again.
+');
 
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (403, 'Create a perfect world', 501);
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (403, 'Preserve the imperfect truth', 502);
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (226, ' Echoes Reclaimed', 306);
 
 -- 5D: Past Anchor
-INSERT INTO dialogs (id, text) VALUES (404, 'You choose to anchor yourself in the third iteration of Caelondria—a time of art and wonder, before despair claimed it.
+INSERT INTO dialogs (id, text) VALUES (203, 'Setting: A hidden lounge beneath the Grand Court stage. Selene slumps into a chair, makeup streaked, breath ragged.
 
-Here, **Selene** performs not for trials but for joy. **Viren** studies history to understand, not to judge. The **Lustrines** swim freely in waters unpolluted by prophecy.
+Lady Selene:
+ "You saw what they wanted: a villain to cheer against. Truth doesn’t sell tickets."
 
-It''s beautiful, but something feels hollow.
+Traveler:
+ '"You faltered today. The prophecy haunts you too, doesn’t it?"'
 
-You know this paradise is built on illusion. The present still calls to you, demanding resolution.
+Lady Selene: (rises, eyes hardening)
+ '"I am the prophecy, in a way. My blood wrote the curtain of law—but I tire of the script."'
 
-You could stay here forever in this borrowed time, or return to face the consequences of choice.
+She opens a case—a sealed document written in old seer glyphs.
+Selene:
+ "This is the original law. It was meant to adapt. Instead, it calcified."');
 
-The past is seductive, but the future needs you.');
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (203, 'The Hidden Verse', 502);
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (203, 'Help her reinterpret the law in secret, using art and performance', 223);
 
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (404, 'Return to your original time', 503);
-INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (404, 'Stay in the chosen past', 504);
 
+INSERT INTO dialogs (id, text) VALUES (213, 'Together, you rewrite the court’s plays. Trials become open dialogues. Her performances embed subtle new precedents.
+Selene (on stage):
+ "Justice is not a hammer—it is a mirror. And today… we clean it."
+The people begin to repeat her words outside the theater. Court changes begin quietly.
+
+Outcome: A soft revolution begins—truth in metaphor, power in poetry.
+');
+
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (213, 'Tides of Choice', 305);
+
+INSERT INTO dialogs (id, text) VALUES (201, 'Setting: Viren and you descend into the ruins beneath the First Tribunal. Ancient laws etched in coral and bone.
+
+Viren (quietly):
+ "Justice once meant something else. Before the Scale... there was the Oath of Waters."
+
+You discover that the Scale was created to simulate balance, not define it. Its original purpose was empathic adjustment—but it was corrupted by rigid doctrine.
+
+Traveler:
+ "So the prophecy is a warning against calcification."
+
+Viren:
+ '"No. It's a cry for rebirth."'');
+
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (201, 'The Hidden Verse.', 502);
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (201, 'Decommission the Scale and propose a tribunal system', 221);
+
+INSERT INTO dialogs (id, text) VALUES (221, 'You gather former judges, rebels, and even commoners. Together, you draft a new system of mobile justice.
+
+Viren:
+ "It will take years to stabilize."
+
+Traveler:
+ "Let’s begin with one voice. One case."
+
+You oversee the first case judged not by law—but by listening.
+
+Outcome: The Aetherial Scale is shelved. Judgment becomes a collective act.
+');
+
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (221, 'Tides of Choice', 301);
+
+INSERT INTO dialogs (id, text) VALUES (202, 'Setting: Your lab shimmers with spectral water. Sound and memory twist in harmonic coils.
+Suddenly, the energy bursts. Visions of drowned Caelondria flood your senses. The melody is not of sorrow—but of echoes denied.
+Elira (rushing in):
+ "You weren’t supposed to tap the Source yet!"
+Traveler:
+ "It’s not just memory. It’s potential… unformed futures."
+The vision tears open a pocket reality. You fall into a version of Caelondria where you died—and another took your place.
+');
+
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (202, 'The Hidden Verse', 502);
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (202, ' Accept the rift—walk both timelines.', 222);
+
+INSERT INTO dialogs (id, text) VALUES (222, 'You step through. One Caelondria where the rebellion never began; another where the Scale never existed.
+
+Alternate Selene (whispering):
+ "I remember you. From a dream."
+
+You now drift between both, bringing whispers of truth from one to the other.
+
+Outcome: You become a bridge of possibility.
+
+');
+
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (222, 'Echoes Reclaimed', 306);
+
+
+INSERT INTO dialogs (id, text) VALUES (204, 'Setting: The court’s central pylon explodes as the Maskbearer tries to act—but Elira’s forces intercept. Chaos—then silence.
+
+You and Elira stand over the collapsed dais. The Maskbearer lies wounded.
+
+Maskbearer:
+ "You said you sought truth... and yet you chose to be a weapon."
+
+Elira (firmly):
+ "No. We chose when the flood would come. And how many it would drown."
+
+Traveler (quietly):
+ "Was there ever a clean path?"
+');
+
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (204, 'The Hidden Verse', 502);
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (204, ' Leave with the Maskbearer and try to reshape the movement underground.', 224);
+
+INSERT INTO dialogs (id, text) VALUES (224, 'You vanish with them into Caelondria’s under-depths. The rebellion lives—but not in flame. In whispers.
+
+Maskbearer (soft):
+ "We lost the war... but maybe we can still win the story."
+
+Outcome: A hidden movement reforms—ready for a new truth.
+
+
+');
+
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (222, 'Echoes Reclaimed', 306);
+
+INSERT INTO dialogs (id, text) VALUES (305, 'Setting: Caelondria now stands in a delicate balance. The Aetherial Scale is dormant, possibly for good. A new tribunal is formed—wandering judges led by you and those you’ve influenced.
+
+Viren steps into the circle, unarmored. Selene carries a new script. Elira sharpens not a weapon—but her words.
+
+Citizens gather under the Rainlight Arches to witness the first true public forum
+
+You and your companions take the Court of the Flood beyond Caelondria’s borders. Tribunals walk from tide to desert, offering judgment based on lived truth.
+
+Lustrines bless your cause.
+
+Maskbearer (appearing once):
+ "Perhaps this... was the truth I sought."
+
+Justice becomes a conversation, not a decree. People in foreign lands begin echoing Caelondria’s model
+
+');
+
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (305, 'The Sovereign of Rain', 501);
+
+INSERT INTO dialogs (id, text) VALUES (306, 'Setting: You now walk in multiple timelines—bridging pasts, presents, and potential futures. Only you remember what could have been. Or what almost was.
+
+The Maskbearer follows, spectral now. Elira’s echo hums in one ear; Selene’s poetry lives in your shadow.
+
+The city shifts around you.
+
+Elders speak of dreams where you appear.
+
+Lustrines call this state “The Drownless Drift.
+
+You choose one timeline—perhaps the poetic court, or the rebellion-led city—and sever the bridges.
+
+Your companions do not remember. But they recognize the change in your eyes.
+
+Maskbearer (vanishing):
+ "So be it. A single truth is better than a thousand forgotten."
+
+You walk alone for a time, but peace follows you.
+
+');
+
+INSERT INTO choices (dialog_id, choice_text, next_dialog_id) VALUES (306, ' Floodlight Reborn', 501);
 -- SEGMENT 6 – FINALE (Endings)
 
 -- Ending 1: The Sovereign of Rain
 INSERT INTO dialogs (id, text) VALUES (501, '**Ending 1: The Sovereign of Rain**
 
-Years pass like seasons, each bringing new growth to the world you and **Viren** have shaped.
+Caelondria awakens beneath a sky no longer ruled by prophecy, but by understanding. The Court of the Rainlight, led by you, becomes a living tradition. Wandering judges roam city to desert, mountain to forest, offering empathy in place of edict.
 
-The Aetherial Scale now serves as a tool of understanding rather than absolute judgment. Justice has become empathy, law has become conversation, and order grows from community rather than control.
+Viren now walks among the people, sharing stories instead of verdicts.
 
-Your new courts spread across continents like ripples on water. Nations adopt the philosophy of "growing justice"—allowing legal systems to evolve with their people''s needs and dreams.
+Viren:
+ “I thought myself forged by law. But law is a cage unless opened by compassion.”
 
-**Selene** leads a renowned school for truth-seekers, teaching others to reveal beauty in honesty. **The Maskbearer** has cast aside their iron disguise and works openly for transparency and accountability.
+"Selene performances become rituals of healing—each play retelling a past injustice, then resolving it anew through the audience’s voice.
 
-The silver rain still falls over Caelondria, but now it nourishes rather than warns. Gardens bloom where once only judgment grew.
+Elira, if alive, leads the envoy of judges across the continent. If gone, her name is a vow whispered before every case.
 
-Caelondria thrives as a beacon of hope across the known world—living proof that perfect systems aren''t born from rigid rules, but grown with patience, wisdom, and care.
+The Aetherial Scale, long silent, now rests in a garden where children ask what it once was—and are met not with reverence, but reflection.
 
-*You have become the Sovereign of Rain, bringing growth where there was once only judgment.*
+You are known not as a savior, but as a listener.
+The rain still falls. But it nourishes, not judges.
 
 **THE END**');
 
 -- Ending 2: The Hidden Verse
 INSERT INTO dialogs (id, text) VALUES (502, '**Ending 2: The Hidden Verse**
 
-You and **Lady Selene** make a choice that will echo through generations: the complete prophecy remains forever hidden.
+Caelondria thrives under a fragile peace. The courts continue their performances. The people believe justice remains divine. And perhaps it does—in a quiet, softened way.
 
-Working in shadows and silence, you two guardians protect Caelondria from the crushing weight of absolute truth. Some lies, you''ve learned, preserve hope better than devastating honesty.
+Only you, and perhaps Lady Selene, remember the truth behind the curtain.
 
-The city continues its imperfect dance between order and chaos, never knowing how close it came to complete destruction. Citizens live, love, and dream, blissfully unaware of the fate you''ve helped them avoid.
+Selene (in a rare moment of honesty):
 
-**Selene''s** performances become legendary, each one a subtle reminder of the beauty worth protecting. You operate from the margins of society, gently guiding decisions away from the prophecy''s dark path.
+ “If I’d spoken it aloud, I would’ve destroyed everything. Some truths must sing in silence.”
 
-Decades pass. As you both grow old together in your secret partnership, you sometimes wonder if you chose correctly.
+You serve not as an arbiter, but as a steward of balance. You guide trials gently, nudge verdicts toward kindness. But never speak of the prophecy.
 
-But watching children play in streets that might never have existed, seeing lovers meet in squares that could have been ruins, you find a deep and lasting peace.
+The Maskbearer disappears. Elira becomes myth or memory. Viren... remains in the shadows of the law he once served.
 
-*Some truths are too heavy for the world to bear. Sometimes, love means carrying that weight in silence.*
+The Aetherial Scale remains untouched—but no longer cruel.
+
+You occasionally visit the coast. The Lustrines sing a verse just for you—one no one else hears:
+
+“When the truth 
 
 **THE END**');
 
 -- Ending 3: Judgment Broken
 INSERT INTO dialogs (id, text) VALUES (503, '**Ending 3: Judgment Broken**
 
-The Aetherial Scale shatters like ancient crystal, its fragments raining down on the plaza like silver tears.
+The Aetherial Scale shatters with a sound like thunder underwater.
 
-The collapse is immediate and total. Without the Scale''s binding force holding society together, Caelondria tears itself apart in a matter of days.
+Panic consumes Caelondria. Courts collapse into riots. Judges flee or fall. The Maskbearer declares the prophecy fulfilled and vanishes into firelight.
 
-Neighbor turns against neighbor as old grievances surface. The courts become battlegrounds where former allies settle scores with violence rather than words. Order dissolves into pure, destructive chaos.
+You survive—barely. You flee through silver-flooded streets, watching once-beautiful towers fall like drowned statues.
 
-You escape the burning city with **Viren** and a handful of survivors, watching from distant hills as generations of progress crumble into ash and memory.
+Viren is never seen again.
 
-"Was it worth it?" Viren asks, his voice hollow with loss.
+Elira dies leading civilians to safety, unless you’d warned her. If saved, she becomes a voice in the refugee lands, refusing to return.
 
-You don''t answer immediately. You can''t answer. The weight of what you''ve unleashed sits heavy on your shoulders.
+Lady Selene remains in the Grand Hall, performing as the city burns—her final act unending.
 
-Years later, living in exile, you help other cities avoid Caelondria''s fate. Your story becomes a cautionary tale whispered in courts across the world—a reminder that some cages exist to protect, not imprison.
+You carry the last memory of what could have been.
 
-*Sometimes, revolution devours its own children. Sometimes, the price of absolute truth is everything you sought to save.*
+The Lustrines sing dirges. They do not intervene.
+
+The world watches Caelondria collapse, and wonders if it too has lied to itself for too long.
 
 **THE END**');
 
 -- Ending 4: Floodlight Reborn
 INSERT INTO dialogs (id, text) VALUES (504, '**Ending 4: Floodlight Reborn**
 
-You choose to remain in your own time, accepting all its imperfections and embracing all its possibilities.
+The city does not expand—but it heals.
 
-With **Elira''s** partnership and the wisdom of all you''ve learned, you establish courts truly made by and for the people. Not perfect justice, but honest justice—flawed, growing, and beautifully human.
+You and Elira (or her legacy) lead a council of rotating citizens. Cases are judged by those with the clearest hearts, not the highest rank.
 
-The new Caelondria rises slowly from the ashes of the old, built not on the rigid foundation of absolute law, but on the living bedrock of community consensus and shared responsibility.
+Selene’s theatre becomes a public court. Art fuels justice. Lustrine memory flows freely to those who ask—not to command the past, but to understand it.
 
-**The Lustrines** emerge from the depths to share their ancient wisdom with those willing to listen. **Selene** teaches the delicate art of revealing truth through beauty and performance. **The Maskbearer** helps design systems of accountability that prevent future tyranny.
+Viren becomes Caelondria’s first historian of law. “Not to preserve it,” he says, “but to remind us what we overcame.”
 
-It''s messy work filled with setbacks, arguments, and failures. There are days when the old ways seem simpler, cleaner, more efficient.
+The Aetherial Scale rests atop a fountain in the square. Not revered. Not feared.
 
-But there''s also laughter echoing in the streets, genuine debate filling the halls, and the rare, precious sight of people governing themselves with wisdom born from experience.
+Children dance around it during festivals.
 
-The Aetherial Scale remains in its place of honor, but transformed—a reminder of what happens when perfection becomes more important than people, when order matters more than growth.
+And when it rains, the people look up—not in fear, but in welcome.
 
-*Caelondria is reborn in clarity and courage, imperfect but alive, growing steadily toward the light.*
+Justice is no longer divine. It is human. And that is enough.
 
 **THE END**
 
